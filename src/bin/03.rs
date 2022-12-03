@@ -1,57 +1,40 @@
 use itertools::Itertools;
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let sum_item_priorities = input.lines().map(|s| search_rucksack(s).unwrap()).sum();
+    input
+        .lines()
+        .map(|rucksack| -> Option<u32> {
+            let size = rucksack.len() / 2;
+            let c1 = &rucksack[..size];
+            let c2 = &rucksack[size..];
+            let duplicate = c1.bytes().find(|i| c2.bytes().contains(i)).unwrap();
 
-    Some(sum_item_priorities)
+            find_priority(duplicate)
+        })
+        .sum()
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let sum_badge_priorities = input
+    input
         .lines()
-        .collect::<Vec<_>>()
-        .chunks(3)
-        .map(|g| search_group(g.to_vec()).unwrap())
-        .sum();
+        .tuples()
+        .map(|(b1, b2, b3)| -> Option<u32> {
+            let badge = b1
+                .bytes()
+                .find(|i| b2.bytes().contains(i) && b3.bytes().contains(i))
+                .unwrap();
 
-    Some(sum_badge_priorities)
+            find_priority(badge)
+        })
+        .sum()
 }
 
-fn find_priority(_item: char) -> Option<u32> {
-    if _item as u32 >= 97 {
-        Some(_item as u32 - 97 + 1)
+fn find_priority(item: u8) -> Option<u32> {
+    if item.is_ascii_uppercase() {
+        Some(27 + (item - b'A') as u32)
     } else {
-        Some(_item as u32 - 65 + 27)
+        Some(1 + (item - b'a') as u32)
     }
-}
-
-fn search_group(group: Vec<&str>) -> Option<u32> {
-    let mut priority = 0;
-
-    for c in group[0].chars() {
-        if group[1].contains(c) && group[2].contains(c) {
-            priority = find_priority(c).unwrap();
-        }
-    }
-
-    Some(priority)
-}
-
-fn search_rucksack(rucksack: &str) -> Option<u32> {
-    let mut priority = 0;
-    let c2 = rucksack
-        .chars()
-        .rev()
-        .take(rucksack.len() / 2)
-        .collect_vec();
-
-    for c in rucksack.chars().take(rucksack.len() / 2) {
-        if c2.contains(&c) {
-            priority = find_priority(c).unwrap();
-        }
-    }
-
-    Some(priority)
 }
 
 fn main() {
