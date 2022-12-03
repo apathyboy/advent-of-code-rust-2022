@@ -32,12 +32,10 @@ fn play_match2(opponent: char, player: char) -> Option<u32> {
         } else {
             Some(opponent_score.unwrap() - 1)
         }
+    } else if opponent_score == Some(3) {
+        Some(7)
     } else {
-        if opponent_score == Some(3) {
-            Some(7)
-        } else {
-            Some(6 + (opponent_score.unwrap() + 1))
-        }
+        Some(6 + (opponent_score.unwrap() + 1))
     }
 }
 
