@@ -1,15 +1,9 @@
 pub fn part_one(input: &str) -> Option<u32> {
-    input
-        .lines()
-        .map(|s| play_match(s.chars().next().unwrap(), s.chars().nth(2).unwrap()))
-        .sum::<Option<u32>>()
+    input.lines().map(play_match_rules1).sum::<Option<u32>>()
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    input
-        .lines()
-        .map(|s| play_match2(s.chars().next().unwrap(), s.chars().nth(2).unwrap()))
-        .sum::<Option<u32>>()
+    input.lines().map(play_match_rules2).sum::<Option<u32>>()
 }
 
 fn score(throw: char) -> Option<u32> {
@@ -21,25 +15,9 @@ fn score(throw: char) -> Option<u32> {
     }
 }
 
-fn play_match2(opponent: char, player: char) -> Option<u32> {
-    let opponent_score = score(opponent);
-
-    if player == 'Y' {
-        Some(3 + opponent_score.unwrap())
-    } else if player == 'X' {
-        if opponent_score == Some(1) {
-            Some(3)
-        } else {
-            Some(opponent_score.unwrap() - 1)
-        }
-    } else if opponent_score == Some(3) {
-        Some(7)
-    } else {
-        Some(6 + (opponent_score.unwrap() + 1))
-    }
-}
-
-fn play_match(opponent: char, player: char) -> Option<u32> {
+fn play_match_rules1(game: &str) -> Option<u32> {
+    let opponent = game.chars().nth(0).unwrap();
+    let player = game.chars().nth(2).unwrap();
     let opponent_score = score(opponent);
     let player_score = score(player);
 
@@ -57,6 +35,26 @@ fn play_match(opponent: char, player: char) -> Option<u32> {
     }
 
     Some(final_score)
+}
+
+fn play_match_rules2(game: &str) -> Option<u32> {
+    let opponent = game.chars().nth(0).unwrap();
+    let player = game.chars().nth(2).unwrap();
+    let opponent_score = score(opponent);
+
+    if player == 'Y' {
+        Some(3 + opponent_score.unwrap())
+    } else if player == 'X' {
+        if opponent_score == Some(1) {
+            Some(3)
+        } else {
+            Some(opponent_score.unwrap() - 1)
+        }
+    } else if opponent_score == Some(3) {
+        Some(7)
+    } else {
+        Some(6 + (opponent_score.unwrap() + 1))
+    }
 }
 
 fn main() {
