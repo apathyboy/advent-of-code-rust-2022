@@ -5,8 +5,11 @@ pub fn part_one(input: &str) -> Option<u32> {
         .sum::<Option<u32>>()
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u32> {
+    input
+        .lines()
+        .map(|s| play_match2(s.chars().next().unwrap(), s.chars().nth(2).unwrap()))
+        .sum::<Option<u32>>()
 }
 
 fn score(throw: char) -> Option<u32> {
@@ -15,6 +18,26 @@ fn score(throw: char) -> Option<u32> {
         'B' | 'Y' => Some(2),
         'C' | 'Z' => Some(3),
         _ => None,
+    }
+}
+
+fn play_match2(opponent: char, player: char) -> Option<u32> {
+    let opponent_score = score(opponent);
+
+    if player == 'Y' {
+        Some(3 + opponent_score.unwrap())
+    } else if player == 'X' {
+        if opponent_score == Some(1) {
+            Some(3)
+        } else {
+            Some(opponent_score.unwrap() - 1)
+        }
+    } else {
+        if opponent_score == Some(3) {
+            Some(7)
+        } else {
+            Some(6 + (opponent_score.unwrap() + 1))
+        }
     }
 }
 
@@ -57,6 +80,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 2);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(12));
     }
 }
