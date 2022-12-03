@@ -6,8 +6,15 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(sum_item_priorities)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u32> {
+    let sum_badge_priorities = input
+        .lines()
+        .collect::<Vec<_>>()
+        .chunks(3)
+        .map(|g| search_group(g.to_vec()).unwrap())
+        .sum();
+
+    Some(sum_badge_priorities)
 }
 
 fn find_priority(_item: char) -> Option<u32> {
@@ -16,6 +23,18 @@ fn find_priority(_item: char) -> Option<u32> {
     } else {
         Some(_item as u32 - 65 + 27)
     }
+}
+
+fn search_group(group: Vec<&str>) -> Option<u32> {
+    let mut priority = 0;
+
+    for c in group[0].chars() {
+        if group[1].contains(c) && group[2].contains(c) {
+            priority = find_priority(c).unwrap();
+        }
+    }
+
+    Some(priority)
 }
 
 fn search_rucksack(rucksack: &str) -> Option<u32> {
@@ -54,6 +73,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 3);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(70));
     }
 }
