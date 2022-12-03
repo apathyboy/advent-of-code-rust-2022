@@ -1,37 +1,21 @@
+use itertools::Itertools;
+
 pub fn part_one(input: &str) -> Option<u32> {
-    let mut largest: u32 = 0;
-
-    let split = input.split("\n\n");
-    for s in split {
-        let mut total: u32 = 0;
-        for s1 in s.lines() {
-            total += s1.parse::<u32>().unwrap()
-        }
-
-        if total > largest {
-            largest = total;
-        }
-    }
-
-    Some(largest)
+    parse_input(input).last().copied()
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let mut calorie_totals = Vec::<u32>::new();
-    let split = input.split("\n\n");
-    for s in split {
-        let mut total: u32 = 0;
-        for s1 in s.lines() {
-            total += s1.parse::<u32>().unwrap()
-        }
-        calorie_totals.push(total);
-    }
+    let top_three = parse_input(input).iter().rev().take(3).sum();
 
-    calorie_totals.sort();
+    Some(top_three)
+}
 
-    let sum_top_three: u32 = calorie_totals.iter().rev().take(3).sum();
-
-    Some(sum_top_three)
+fn parse_input(input: &str) -> Vec<u32> {
+    input
+        .split("\n\n")
+        .map(|s| s.lines().map(|s| s.parse::<u32>().unwrap()).sum())
+        .sorted()
+        .collect()
 }
 
 fn main() {
