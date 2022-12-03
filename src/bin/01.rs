@@ -1,19 +1,19 @@
 use itertools::Itertools;
 
 pub fn part_one(input: &str) -> Option<u32> {
-    parse_input(input).last().copied()
+    parse_input(input).unwrap().last().copied()
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let top_three = parse_input(input).iter().rev().take(3).sum();
+    let top_three = parse_input(input).unwrap().iter().rev().take(3).sum();
 
     Some(top_three)
 }
 
-fn parse_input(input: &str) -> Vec<u32> {
+fn parse_input(input: &str) -> Option<Vec<u32>> {
     input
         .split("\n\n")
-        .map(|s| s.lines().map(|s| s.parse::<u32>().unwrap()).sum())
+        .map(|s| Some(s.lines().map(|s| s.parse::<u32>().unwrap()).sum()))
         .sorted()
         .collect()
 }
