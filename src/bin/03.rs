@@ -8,7 +8,7 @@ pub fn part_one(input: &str) -> Option<u32> {
             let c1 = &rucksack[..size];
             let c2 = &rucksack[size..];
 
-            c1.bytes().find(|i| c2.bytes().contains(i)).unwrap()
+            c1.bytes().find(|i| c2.as_bytes().contains(i)).unwrap()
         })
         .map(find_priority)
         .sum()
@@ -19,8 +19,10 @@ pub fn part_two(input: &str) -> Option<u32> {
         .lines()
         .tuples()
         .map(|(b1, b2, b3)| -> u8 {
+            let s1 = b2.as_bytes();
+            let s2 = b3.as_bytes();
             b1.bytes()
-                .find(|i| b2.bytes().contains(i) && b3.bytes().contains(i))
+                .find(|i| s1.contains(i) && s2.contains(i))
                 .unwrap()
         })
         .map(find_priority)
