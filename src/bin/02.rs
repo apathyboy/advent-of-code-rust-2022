@@ -16,25 +16,18 @@ fn score(throw: char) -> Option<u32> {
 }
 
 fn play_match_rules1(game: &str) -> Option<u32> {
-    let opponent = game.chars().nth(0).unwrap();
-    let player = game.chars().nth(2).unwrap();
-    let opponent_score = score(opponent);
-    let player_score = score(player);
-
-    let final_score;
-
-    if opponent_score == player_score {
-        final_score = 3 + player_score.unwrap();
-    } else if (opponent_score == Some(1) && player_score == Some(3))
-        || ((opponent_score > Some(1) && opponent_score > player_score)
-            && !(player_score == Some(1) && opponent_score == Some(3)))
-    {
-        final_score = player_score.unwrap();
-    } else {
-        final_score = 6 + player_score.unwrap();
+    match game {
+        "A X" => Some(4),
+        "A Y" => Some(8),
+        "A Z" => Some(3),
+        "B X" => Some(1),
+        "B Y" => Some(5),
+        "B Z" => Some(9),
+        "C X" => Some(7),
+        "C Y" => Some(2),
+        "C Z" => Some(6),
+        _ => None,
     }
-
-    Some(final_score)
 }
 
 fn play_match_rules2(game: &str) -> Option<u32> {
