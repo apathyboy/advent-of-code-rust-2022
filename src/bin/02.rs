@@ -1,38 +1,38 @@
 pub fn part_one(input: &str) -> Option<u32> {
-    input.lines().map(outcomes_part1).sum::<Option<u32>>()
+    Some(input.lines().map(outcomes_part1).sum())
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    input.lines().map(outcomes_part2).sum::<Option<u32>>()
+    Some(input.lines().map(outcomes_part2).sum())
 }
 
-fn outcomes_part1(game: &str) -> Option<u32> {
+fn outcomes_part1(game: &str) -> u32 {
     match game {
-        "A X" => Some(4),
-        "A Y" => Some(8),
-        "A Z" => Some(3),
-        "B X" => Some(1),
-        "B Y" => Some(5),
-        "B Z" => Some(9),
-        "C X" => Some(7),
-        "C Y" => Some(2),
-        "C Z" => Some(6),
-        _ => None,
+        "A X" => 4,
+        "A Y" => 8,
+        "A Z" => 3,
+        "B X" => 1,
+        "B Y" => 5,
+        "B Z" => 9,
+        "C X" => 7,
+        "C Y" => 2,
+        "C Z" => 6,
+        _ => panic!(),
     }
 }
 
-fn outcomes_part2(game: &str) -> Option<u32> {
+fn outcomes_part2(game: &str) -> u32 {
     match game {
-        "A X" => Some(3),
-        "A Y" => Some(4),
-        "A Z" => Some(8),
-        "B X" => Some(1),
-        "B Y" => Some(5),
-        "B Z" => Some(9),
-        "C X" => Some(2),
-        "C Y" => Some(6),
-        "C Z" => Some(7),
-        _ => None,
+        "A X" => 3,
+        "A Y" => 4,
+        "A Z" => 8,
+        "B X" => 1,
+        "B Y" => 5,
+        "B Z" => 9,
+        "C X" => 2,
+        "C Y" => 6,
+        "C Z" => 7,
+        _ => panic!(),
     }
 }
 

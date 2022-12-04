@@ -1,21 +1,25 @@
 use itertools::Itertools;
 
 pub fn part_one(input: &str) -> Option<u32> {
-    parse_input(input).unwrap().last().copied()
+    input.split("\n\n").map(parse_group).max()
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let top_three = parse_input(input).unwrap().iter().rev().take(3).sum();
+    let top3 = input
+        .split("\n\n")
+        .map(parse_group)
+        .sorted_unstable_by(|a, b| b.cmp(a))
+        .take(3)
+        .sum();
 
-    Some(top_three)
+    Some(top3)
 }
 
-fn parse_input(input: &str) -> Option<Vec<u32>> {
+fn parse_group(input: &str) -> u32 {
     input
-        .split("\n\n")
-        .map(|s| Some(s.lines().map(|s| s.parse::<u32>().unwrap()).sum()))
-        .sorted()
-        .collect()
+        .split('\n')
+        .filter_map(|s| s.parse::<u32>().ok())
+        .sum()
 }
 
 fn main() {

@@ -3,12 +3,13 @@ use itertools::Itertools;
 pub fn part_one(input: &str) -> Option<u32> {
     input
         .lines()
-        .map(|rucksack| -> u8 {
+        .map(|l| l.as_bytes())
+        .map(|rucksack| -> &u8 {
             let size = rucksack.len() / 2;
             let c1 = &rucksack[..size];
             let c2 = &rucksack[size..];
 
-            c1.bytes().find(|i| c2.as_bytes().contains(i)).unwrap()
+            c1.iter().find(|i| c2.contains(i)).unwrap()
         })
         .map(find_priority)
         .sum()
@@ -17,23 +18,21 @@ pub fn part_one(input: &str) -> Option<u32> {
 pub fn part_two(input: &str) -> Option<u32> {
     input
         .lines()
+        .map(|l| l.as_bytes())
         .tuples()
-        .map(|(b1, b2, b3)| -> u8 {
-            let s1 = b2.as_bytes();
-            let s2 = b3.as_bytes();
-            b1.bytes()
-                .find(|i| s1.contains(i) && s2.contains(i))
+        .map(|(b1, b2, b3)| -> &u8 {
+            b1.iter()
+                .find(|i| b2.contains(i) && b3.contains(i))
                 .unwrap()
         })
         .map(find_priority)
         .sum()
 }
 
-fn find_priority(item: u8) -> Option<u32> {
-    if item.is_ascii_uppercase() {
-        Some(27 + (item - b'A') as u32)
-    } else {
-        Some(1 + (item - b'a') as u32)
+fn find_priority(item: &u8) -> Option<u32> {
+    match item.is_ascii_uppercase() {
+        true => Some(27 + (item - b'A') as u32),
+        false => Some(1 + (item - b'a') as u32),
     }
 }
 
