@@ -3,14 +3,14 @@ use itertools::Itertools;
 pub fn part_one(input: &str) -> Option<u32> {
     input
         .lines()
-        .map(|rucksack| -> Option<u32> {
+        .map(|rucksack| -> u8 {
             let size = rucksack.len() / 2;
             let c1 = &rucksack[..size];
             let c2 = &rucksack[size..];
-            let duplicate = c1.bytes().find(|i| c2.bytes().contains(i)).unwrap();
 
-            find_priority(duplicate)
+            c1.bytes().find(|i| c2.bytes().contains(i)).unwrap()
         })
+        .map(find_priority)
         .sum()
 }
 
@@ -18,14 +18,12 @@ pub fn part_two(input: &str) -> Option<u32> {
     input
         .lines()
         .tuples()
-        .map(|(b1, b2, b3)| -> Option<u32> {
-            let badge = b1
-                .bytes()
+        .map(|(b1, b2, b3)| -> u8 {
+            b1.bytes()
                 .find(|i| b2.bytes().contains(i) && b3.bytes().contains(i))
-                .unwrap();
-
-            find_priority(badge)
+                .unwrap()
         })
+        .map(find_priority)
         .sum()
 }
 
