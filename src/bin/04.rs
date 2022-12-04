@@ -1,16 +1,28 @@
 pub fn part_one(input: &str) -> Option<usize> {
-    Some(input.lines().map(parse).filter(contains).count())
+    let fully_contains = input
+        .lines()
+        .map(parse)
+        .filter(|v| contains(&v[..]))
+        .count();
+
+    Some(fully_contains)
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
-    Some(input.lines().map(parse).filter(overlaps).count())
+    let overlaps = input
+        .lines()
+        .map(parse)
+        .filter(|v| overlaps(&v[..]))
+        .count();
+
+    Some(overlaps)
 }
 
-fn contains(input: &Vec<u32>) -> bool {
+fn contains(input: &[u32]) -> bool {
     (input[0] <= input[2] && input[1] >= input[3]) || (input[0] >= input[2] && input[1] <= input[3])
 }
 
-fn overlaps(input: &Vec<u32>) -> bool {
+fn overlaps(input: &[u32]) -> bool {
     (input[0] >= input[2] && input[0] <= input[3])
         || (input[1] >= input[2] && input[1] <= input[3])
         || (input[2] >= input[0] && input[2] <= input[1])
@@ -19,8 +31,8 @@ fn overlaps(input: &Vec<u32>) -> bool {
 
 fn parse(input: &str) -> Vec<u32> {
     input
-        .split(",")
-        .flat_map(|s| s.split("-").map(|v| v.parse().unwrap()))
+        .split(',')
+        .flat_map(|s| s.split('-').map(|v| v.parse().unwrap()))
         .collect()
 }
 
