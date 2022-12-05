@@ -1,19 +1,12 @@
 use std::collections::VecDeque;
 
+use itertools::Itertools;
 use regex::Regex;
 
 pub fn part_one(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);
 
-    let re = Regex::new(r"move ([0-9]+) from ([0-9]+) to ([0-9]+)").unwrap();
-
-    for m in moves.lines() {
-        let caps = re.captures(m).unwrap();
-
-        let move_counter = caps.get(1).unwrap().as_str().parse::<u32>().unwrap();
-        let from_stack = caps.get(2).unwrap().as_str().parse::<usize>().unwrap() - 1;
-        let to_stack = caps.get(3).unwrap().as_str().parse::<usize>().unwrap() - 1;
-
+    for (move_counter, from_stack, to_stack) in moves {
         for _ in 0..move_counter {
             let move_val = stacks[from_stack].pop_back().unwrap();
             stacks[to_stack].push_back(move_val);
@@ -28,24 +21,15 @@ pub fn part_one(input: &str) -> Option<String> {
 pub fn part_two(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);
 
-    let re = Regex::new(r"move ([0-9]+) from ([0-9]+) to ([0-9]+)").unwrap();
-
-    for m in moves.lines() {
-        let caps = re.captures(m).unwrap();
-
-        let move_counter = caps.get(1).unwrap().as_str().parse::<u32>().unwrap();
-        let from_stack = caps.get(2).unwrap().as_str().parse::<usize>().unwrap() - 1;
-        let to_stack = caps.get(3).unwrap().as_str().parse::<usize>().unwrap() - 1;
-
-        let mut tmp: Vec<char> = Vec::new();
+    for (move_counter, from_stack, to_stack) in moves {
+        let mut tmp: VecDeque<char> = VecDeque::new();
 
         for _ in 0..move_counter {
-            let move_val = stacks[from_stack].pop_back().unwrap();
-            tmp.push(move_val);
+            tmp.push_front(stacks[from_stack].pop_back().unwrap());
         }
 
         for _ in 0..tmp.len() {
-            stacks[to_stack].push_back(tmp.pop().unwrap());
+            stacks[to_stack].append(&mut tmp);
         }
     }
 
@@ -54,34 +38,50 @@ pub fn part_two(input: &str) -> Option<String> {
     Some(s)
 }
 
-fn parse_input(input: &str) -> (Vec<VecDeque<char>>, &str) {
-    let (stacks, moves) = input.split_at(input.find("\n\n").unwrap());
+fn parse_moves(input: &str) -> Vec<(u32, usize, usize)> {
+    let re = Regex::new(r"move ([0-9]+) from ([0-9]+) to ([0-9]+)").unwrap();
+    let input = input.trim();
 
-    let stacks = stacks.lines().collect::<Vec<&str>>();
+    input
+        .lines()
+        .map(|s| -> (u32, usize, usize) {
+            let caps = re.captures(s).unwrap();
 
-    let stack_count = (stacks[0].len() + 1) / 4;
+            (
+                caps.get(1).unwrap().as_str().parse::<u32>().unwrap(),
+                caps.get(2).unwrap().as_str().parse::<usize>().unwrap() - 1,
+                caps.get(3).unwrap().as_str().parse::<usize>().unwrap() - 1,
+            )
+        })
+        .collect_vec()
+}
 
+fn parse_stacks(input: &str) -> Vec<VecDeque<char>> {
+    let stack_count = (input.lines().next().unwrap().len() + 1) / 4;
     let mut stack_containers: Vec<VecDeque<char>> = vec![VecDeque::new(); stack_count];
 
-    for row in stacks {
-        if row.chars().nth(1).unwrap() == '1' {
-            continue;
-        }
+    let mut rows = input
+        .lines()
+        .map(|s| s.chars().skip(1).step_by(4).collect_vec())
+        .peekable();
 
-        let mut stack_id = 0;
-
-        while stack_id < stack_count {
-            let contents = row.chars().nth((stack_id * 4) + 1).unwrap();
-
-            if contents != ' ' {
-                stack_containers[stack_id].push_front(contents);
+    while let Some(row) = rows.next() {
+        if rows.peek().is_some() {
+            for (idx, item) in row.iter().enumerate() {
+                if item != &' ' {
+                    stack_containers[idx].push_front(item.clone());
+                }
             }
-
-            stack_id += 1;
         }
     }
 
-    (stack_containers, moves.trim())
+    stack_containers
+}
+
+fn parse_input(input: &str) -> (Vec<VecDeque<char>>, Vec<(u32, usize, usize)>) {
+    let (stacks, moves) = input.split_at(input.find("\n\n").unwrap());
+
+    (parse_stacks(stacks), parse_moves(moves))
 }
 
 fn main() {
