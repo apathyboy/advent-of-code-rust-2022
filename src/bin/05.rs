@@ -2,6 +2,8 @@ use std::collections::VecDeque;
 
 use itertools::Itertools;
 
+pub type Move = (u32, usize, usize);
+
 pub fn part_one(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);
 
@@ -28,14 +30,14 @@ pub fn part_two(input: &str) -> Option<String> {
     Some(collect_stack_tops(&stacks))
 }
 
-fn collect_stack_tops(stacks: &Vec<VecDeque<char>>) -> String {
+fn collect_stack_tops(stacks: &[VecDeque<char>]) -> String {
     stacks
         .iter()
         .filter_map(|stack| stack.iter().last())
         .collect()
 }
 
-fn parse_moves(input: &str) -> Vec<(u32, usize, usize)> {
+fn parse_moves(input: &str) -> Vec<Move> {
     let input = input.trim();
     input
         .lines()
@@ -65,7 +67,7 @@ fn parse_stacks(input: &str) -> Vec<VecDeque<char>> {
     stacks
 }
 
-fn parse_input(input: &str) -> (Vec<VecDeque<char>>, Vec<(u32, usize, usize)>) {
+fn parse_input(input: &str) -> (Vec<VecDeque<char>>, Vec<Move>) {
     let (stacks, moves) = input.split_at(input.find("\n\n").unwrap());
 
     (parse_stacks(stacks), parse_moves(moves))
