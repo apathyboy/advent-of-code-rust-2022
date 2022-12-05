@@ -25,8 +25,33 @@ pub fn part_one(input: &str) -> Option<String> {
     Some(s)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<String> {
+    let (mut stacks, moves) = parse_input(input);
+
+    let re = Regex::new(r"move ([0-9]+) from ([0-9]+) to ([0-9]+)").unwrap();
+
+    for m in moves.lines() {
+        let caps = re.captures(m).unwrap();
+
+        let move_counter = caps.get(1).unwrap().as_str().parse::<u32>().unwrap();
+        let from_stack = caps.get(2).unwrap().as_str().parse::<usize>().unwrap() - 1;
+        let to_stack = caps.get(3).unwrap().as_str().parse::<usize>().unwrap() - 1;
+
+        let mut tmp: Vec<char> = Vec::new();
+
+        for _ in 0..move_counter {
+            let move_val = stacks[from_stack].pop_back().unwrap();
+            tmp.push(move_val);
+        }
+
+        for _ in 0..tmp.len() {
+            stacks[to_stack].push_back(tmp.pop().unwrap());
+        }
+    }
+
+    let s = stacks.iter().map(|v| v.back().unwrap()).collect::<String>();
+
+    Some(s)
 }
 
 fn parse_input(input: &str) -> (Vec<VecDeque<char>>, &str) {
@@ -78,6 +103,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 5);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some("MCD".to_string()));
     }
 }
