@@ -1,7 +1,6 @@
 use std::collections::VecDeque;
 
 use itertools::Itertools;
-use regex::Regex;
 
 pub fn part_one(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);
@@ -13,44 +12,39 @@ pub fn part_one(input: &str) -> Option<String> {
         }
     }
 
-    let s = stacks.iter().map(|v| v.back().unwrap()).collect::<String>();
-
-    Some(s)
+    Some(collect_stack_tops(&stacks))
 }
 
 pub fn part_two(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);
 
     for (move_counter, from_stack, to_stack) in moves {
-        let mut tmp: VecDeque<char> = VecDeque::new();
+        let at = stacks[from_stack].len() - move_counter as usize;
 
-        for _ in 0..move_counter {
-            tmp.push_front(stacks[from_stack].pop_back().unwrap());
-        }
-
-        for _ in 0..tmp.len() {
-            stacks[to_stack].append(&mut tmp);
-        }
+        let mut to_move = stacks[from_stack].split_off(at);
+        stacks[to_stack].append(&mut to_move);
     }
 
-    let s = stacks.iter().map(|v| v.back().unwrap()).collect::<String>();
+    Some(collect_stack_tops(&stacks))
+}
 
-    Some(s)
+fn collect_stack_tops(stacks: &Vec<VecDeque<char>>) -> String {
+    stacks
+        .iter()
+        .filter_map(|stack| stack.iter().last())
+        .collect()
 }
 
 fn parse_moves(input: &str) -> Vec<(u32, usize, usize)> {
-    let re = Regex::new(r"move ([0-9]+) from ([0-9]+) to ([0-9]+)").unwrap();
     let input = input.trim();
-
     input
         .lines()
-        .map(|s| -> (u32, usize, usize) {
-            let caps = re.captures(s).unwrap();
-
+        .map(|line| -> (u32, usize, usize) {
+            let vals = line.split(' ').skip(1).step_by(2).collect_vec();
             (
-                caps.get(1).unwrap().as_str().parse::<u32>().unwrap(),
-                caps.get(2).unwrap().as_str().parse::<usize>().unwrap() - 1,
-                caps.get(3).unwrap().as_str().parse::<usize>().unwrap() - 1,
+                vals[0].parse::<u32>().unwrap(),
+                vals[1].parse::<usize>().unwrap() - 1,
+                vals[2].parse::<usize>().unwrap() - 1,
             )
         })
         .collect_vec()
@@ -58,24 +52,17 @@ fn parse_moves(input: &str) -> Vec<(u32, usize, usize)> {
 
 fn parse_stacks(input: &str) -> Vec<VecDeque<char>> {
     let stack_count = (input.lines().next().unwrap().len() + 1) / 4;
-    let mut stack_containers: Vec<VecDeque<char>> = vec![VecDeque::new(); stack_count];
+    let mut stacks = vec![VecDeque::new(); stack_count];
 
-    let mut rows = input
-        .lines()
-        .map(|s| s.chars().skip(1).step_by(4).collect_vec())
-        .peekable();
-
-    while let Some(row) = rows.next() {
-        if rows.peek().is_some() {
-            for (idx, item) in row.iter().enumerate() {
-                if item != &' ' {
-                    stack_containers[idx].push_front(item.clone());
-                }
+    for line in input.rsplit('\n').skip(1) {
+        for (i, v) in line.chars().skip(1).step_by(4).enumerate() {
+            if v != ' ' {
+                stacks.get_mut(i).unwrap().push_back(v);
             }
         }
     }
 
-    stack_containers
+    stacks
 }
 
 fn parse_input(input: &str) -> (Vec<VecDeque<char>>, Vec<(u32, usize, usize)>) {
