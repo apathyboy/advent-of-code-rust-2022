@@ -3,10 +3,7 @@ use std::collections::HashMap;
 pub fn part_one(input: &str) -> Option<u64> {
     let total = read_directory_sizes(input)
         .iter()
-        .filter_map(|size| match *size < 100000 {
-            true => Some(size),
-            _ => None,
-        })
+        .filter(|size| **size < 100000)
         .sum();
 
     Some(total)
@@ -32,7 +29,7 @@ fn read_directory_sizes(input: &str) -> Vec<u64> {
     let mut dir_structure: HashMap<String, u64> = HashMap::new();
 
     for chunk in input.split('$') {
-        if chunk.len() == 0 {
+        if chunk.is_empty() {
             continue;
         }
 
@@ -53,8 +50,8 @@ fn read_directory_sizes(input: &str) -> Vec<u64> {
             }
         } else if command[0] == "ls" {
             let dir_size = lines
-                .map(|s| s.split(' ').nth(0).unwrap())
-                .filter_map(|s| match s.chars().nth(0).unwrap().is_numeric() {
+                .map(|s| s.split(' ').next().unwrap())
+                .filter_map(|s| match s.chars().next().unwrap().is_numeric() {
                     true => Some(s.parse::<u64>().unwrap()),
                     _ => None,
                 })
@@ -65,7 +62,7 @@ fn read_directory_sizes(input: &str) -> Vec<u64> {
             for d in current_path.clone() {
                 dir.push_str(d);
                 *dir_structure.get_mut(dir.as_str()).unwrap() += dir_size;
-                dir.push_str("/");
+                dir.push('/');
             }
         }
     }
