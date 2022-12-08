@@ -26,10 +26,20 @@ pub fn part_one(input: &str) -> Option<u32> {
             let visible_right = !map[y].iter().skip(x + 1).any(|&i| i >= c);
 
             // check up
-            let visible_up = !map_transposed[x].iter().take(y).any(|&i| i >= c);
+            let visible_up = !map_transposed
+                .get(x)
+                .unwrap()
+                .iter()
+                .take(y)
+                .any(|&i| i >= c);
 
             // check down
-            let visible_down = !map_transposed[x].iter().skip(y + 1).any(|&i| i >= c);
+            let visible_down = !map_transposed
+                .get(x)
+                .unwrap()
+                .iter()
+                .skip(y + 1)
+                .any(|&i| i >= c);
 
             if visible_left || visible_right || visible_up || visible_down {
                 visible += 1;
@@ -70,7 +80,9 @@ pub fn part_two(input: &str) -> Option<u32> {
                 visible_right += 1;
             }
 
-            let mut visible_up = map_transposed[x]
+            let mut visible_up = map_transposed
+                .get(x)
+                .unwrap()
                 .iter()
                 .take(y)
                 .rev()
@@ -80,7 +92,9 @@ pub fn part_two(input: &str) -> Option<u32> {
                 visible_up += 1;
             }
 
-            let mut visible_down = map_transposed[x]
+            let mut visible_down = map_transposed
+                .get(x)
+                .unwrap()
                 .iter()
                 .skip(y + 1)
                 .take_while(|&i| *i < c)
@@ -99,7 +113,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     Some(max_scenic_score)
 }
 
-fn transpose(map: &Vec<Vec<u32>>) -> Vec<Vec<u32>> {
+fn transpose(map: &[Vec<u32>]) -> Vec<Vec<u32>> {
     (0..map[0].len())
         .map(|i| map.iter().map(|c| c[i]).collect_vec())
         .collect_vec()
