@@ -1,84 +1,53 @@
 use itertools::Itertools;
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let map = parse_map(input);
+    let (map, x_max, y_max) = parse_map(input);
 
-    let visible = (0..map.len())
-        .cartesian_product(0..map[0].len())
-        .filter(|(x, y)| {
-            if *x == 0 || *y == 0 || *x + 1 == map[0].len() || *y + 1 == map.len() {
-                return true;
-            }
-
-            let c = map[*y][*x];
-
-            if !map[*y].iter().take(*x).any(|&i| i >= c)
-                || !map[*y].iter().skip(*x + 1).any(|&i| i >= c)
-                || !map.iter().take(*y).any(|row| row[*x] as u32 >= c)
-                || !map.iter().skip(*y + 1).any(|row| row[*x] as u32 >= c)
-            {
-                return true;
-            }
-
-            false
-        })
+    let visible = (0..y_max)
+        .cartesian_product(0..x_max)
+        .filter(|(x, y)| visibility_check(&map, *x, x_max, *y, y_max))
         .count() as u32;
 
     Some(visible)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let map = parse_map(input);
+    let (map, x_max, y_max) = parse_map(input);
 
-    (0..map.len())
-        .cartesian_product(0..map[0].len())
-        .map(|(x, y)| -> u32 {
-            let c = map[y][x];
-
-            let visible_left = x - map[y]
-                .iter()
-                .take(x)
-                .rev()
-                .skip_while(|&i| *i < c)
-                .skip(1)
-                .count();
-
-            let visible_right = map.len()
-                - (x + 1)
-                - map[y]
-                    .iter()
-                    .skip(x + 1)
-                    .skip_while(|&i| *i < c)
-                    .skip(1)
-                    .count();
-
-            let visible_up = y - map
-                .iter()
-                .take(y)
-                .rev()
-                .skip_while(|row| row[x] < c)
-                .skip(1)
-                .count();
-
-            let visible_down = map[0].len()
-                - (y + 1)
-                - map
-                    .iter()
-                    .skip(y + 1)
-                    .skip_while(|row| row[x] < c)
-                    .skip(1)
-                    .count();
-
-            (visible_left * visible_right * visible_up * visible_down) as u32
-        })
+    (1..y_max - 1)
+        .cartesian_product(1..x_max - 1)
+        .map(|(x, y)| scenic_score(&map, x, x_max, y, y_max))
         .max()
 }
 
-fn parse_map(input: &str) -> Vec<Vec<u32>> {
-    input
+fn visibility_check(map: &[Vec<u32>], x: usize, x_max: usize, y: usize, y_max: usize) -> bool {
+    let c = map[y][x];
+
+    (0..x).all(|i| map[y][i] < c)
+        || (x + 1..x_max).all(|i| map[y][i] < c)
+        || (0..y).all(|j| map[j][x] < c)
+        || (y + 1..y_max).all(|j| map[j][x] < c)
+}
+
+fn scenic_score(map: &[Vec<u32>], x: usize, x_max: usize, y: usize, y_max: usize) -> u32 {
+    let c = map[y][x];
+
+    ((1 + (1..x).rev().take_while(|&i| map[y][i] < c).count())
+        * (1 + (x + 1..x_max - 1).take_while(|&i| map[y][i] < c).count())
+        * (1 + (1..y).rev().take_while(|&i| map[i][x] < c).count())
+        * (1 + (y + 1..y_max - 1).take_while(|&i| map[i][x] < c).count())) as u32
+}
+
+fn parse_map(input: &str) -> (Vec<Vec<u32>>, usize, usize) {
+    let map = input
         .lines()
         .map(|s| s.chars().map(|c| c.to_digit(10).unwrap()).collect_vec())
-        .collect_vec()
+        .collect_vec();
+
+    let x_max = map[0].len();
+    let y_max = map.len();
+
+    (map, x_max, y_max)
 }
 
 fn main() {
