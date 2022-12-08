@@ -1,121 +1,83 @@
 use itertools::Itertools;
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let map = input
-        .lines()
-        .map(|s| s.chars().map(|c| c.to_digit(10).unwrap()).collect_vec())
-        .collect_vec();
+    let map = parse_map(input);
 
-    let map_transposed = transpose(&map);
-
-    let mut visible = 0;
-
-    for y in 0..map.len() {
-        for x in 0..map[0].len() {
-            if x == 0 || y == 0 || x + 1 == map[0].len() || y + 1 == map.len() {
-                visible += 1;
-                continue;
+    let visible = (0..map.len())
+        .cartesian_product(0..map[0].len())
+        .filter(|(x, y)| {
+            if *x == 0 || *y == 0 || *x + 1 == map[0].len() || *y + 1 == map.len() {
+                return true;
             }
 
-            let c = map[y][x];
+            let c = map[*y][*x];
 
-            // check left
-            let visible_left = !map[y].iter().take(x).any(|&i| i >= c);
-
-            // check right
-            let visible_right = !map[y].iter().skip(x + 1).any(|&i| i >= c);
-
-            // check up
-            let visible_up = !map_transposed
-                .get(x)
-                .unwrap()
-                .iter()
-                .take(y)
-                .any(|&i| i >= c);
-
-            // check down
-            let visible_down = !map_transposed
-                .get(x)
-                .unwrap()
-                .iter()
-                .skip(y + 1)
-                .any(|&i| i >= c);
-
-            if visible_left || visible_right || visible_up || visible_down {
-                visible += 1;
+            if !map[*y].iter().take(*x).any(|&i| i >= c)
+                || !map[*y].iter().skip(*x + 1).any(|&i| i >= c)
+                || !map.iter().take(*y).any(|row| row[*x] as u32 >= c)
+                || !map.iter().skip(*y + 1).any(|row| row[*x] as u32 >= c)
+            {
+                return true;
             }
-        }
-    }
+
+            false
+        })
+        .count() as u32;
 
     Some(visible)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let map = input
-        .lines()
-        .map(|s| s.chars().map(|c| c.to_digit(10).unwrap()).collect_vec())
-        .collect_vec();
+    let map = parse_map(input);
 
-    let map_transposed = transpose(&map);
-
-    let mut max_scenic_score = 0;
-
-    for y in 0..map.len() {
-        for x in 0..map[0].len() {
-            if x == 0 || y == 0 || x + 1 == map[0].len() || y + 1 == map.len() {
-                continue;
-            }
-
+    (0..map.len())
+        .cartesian_product(0..map[0].len())
+        .map(|(x, y)| -> u32 {
             let c = map[y][x];
 
-            let mut visible_left =
-                map[y].iter().take(x).rev().take_while(|&i| *i < c).count() as u32;
-            if visible_left < x as u32 {
-                visible_left += 1;
-            }
+            let visible_left = x - map[y]
+                .iter()
+                .take(x)
+                .rev()
+                .skip_while(|&i| *i < c)
+                .skip(1)
+                .count();
 
-            let mut visible_right =
-                map[y].iter().skip(x + 1).take_while(|&i| *i < c).count() as u32;
-            if visible_right < (map.len() - (x + 1)) as u32 {
-                visible_right += 1;
-            }
+            let visible_right = map.len()
+                - (x + 1)
+                - map[y]
+                    .iter()
+                    .skip(x + 1)
+                    .skip_while(|&i| *i < c)
+                    .skip(1)
+                    .count();
 
-            let mut visible_up = map_transposed
-                .get(x)
-                .unwrap()
+            let visible_up = y - map
                 .iter()
                 .take(y)
                 .rev()
-                .take_while(|&i| *i < c)
-                .count() as u32;
-            if visible_up < y as u32 {
-                visible_up += 1;
-            }
+                .skip_while(|row| row[x] < c)
+                .skip(1)
+                .count();
 
-            let mut visible_down = map_transposed
-                .get(x)
-                .unwrap()
-                .iter()
-                .skip(y + 1)
-                .take_while(|&i| *i < c)
-                .count() as u32;
-            if visible_down < (map[0].len() - (y + 1)) as u32 {
-                visible_down += 1;
-            }
+            let visible_down = map[0].len()
+                - (y + 1)
+                - map
+                    .iter()
+                    .skip(y + 1)
+                    .skip_while(|row| row[x] < c)
+                    .skip(1)
+                    .count();
 
-            let scenic_score = visible_left * visible_right * visible_up * visible_down;
-            if scenic_score > max_scenic_score {
-                max_scenic_score = scenic_score;
-            }
-        }
-    }
-
-    Some(max_scenic_score)
+            (visible_left * visible_right * visible_up * visible_down) as u32
+        })
+        .max()
 }
 
-fn transpose(map: &[Vec<u32>]) -> Vec<Vec<u32>> {
-    (0..map[0].len())
-        .map(|i| map.iter().map(|c| c[i]).collect_vec())
+fn parse_map(input: &str) -> Vec<Vec<u32>> {
+    input
+        .lines()
+        .map(|s| s.chars().map(|c| c.to_digit(10).unwrap()).collect_vec())
         .collect_vec()
 }
 
