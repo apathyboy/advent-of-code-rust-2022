@@ -14,35 +14,53 @@ fn model(input: &str, knot_count: usize) -> Option<u32> {
 
     let unique_visits = motions
         .iter()
-        .flat_map(|(motion, amt)| -> Vec<(i32, i32)> {
-            (0..*amt)
-                .map(|_| -> (i32, i32) {
-                    knots[0].0 += motion.0;
-                    knots[0].1 += motion.1;
-
-                    for i in 1..knots.len() {
-                        let x_diff = knots[i - 1].0 - knots[i].0;
-                        let y_diff = knots[i - 1].1 - knots[i].1;
-
-                        if (x_diff).abs() > 1 || (y_diff).abs() > 1 {
-                            let follow_motion = (x_diff.signum(), y_diff.signum());
-
-                            knots[i].0 += follow_motion.0;
-                            knots[i].1 += follow_motion.1;
-                        }
-                    }
-
-                    knots[knot_count - 1]
-                })
-                .collect_vec()
-        })
+        .flat_map(|(motion, amt)| move_instruction(&mut knots, motion, amt))
         .unique()
         .count();
 
     Some(unique_visits as u32)
 }
 
-fn move_dir(dir: &str) -> Option<(i32, i32)> {
+fn move_instruction(
+    knots: &mut Vec<(i32, i32)>,
+    motion: &(i32, i32),
+    amt: &i32,
+) -> Vec<(i32, i32)> {
+    (0..*amt)
+        .map(|_| -> (i32, i32) {
+            move_toward(&mut knots[0], motion);
+
+            for i in 1..knots.len() {
+                let d = diff(&knots[i - 1], &knots[i]);
+
+                if d.0.abs() > 1 || d.1.abs() > 1 {
+                    move_toward(&mut knots[i], &(d.0.signum(), d.1.signum()));
+                }
+            }
+
+            *knots.last().unwrap()
+        })
+        .collect()
+}
+
+fn diff(knot1: &(i32, i32), knot2: &(i32, i32)) -> (i32, i32) {
+    (knot1.0 - knot2.0, knot1.1 - knot2.1)
+}
+
+fn move_toward(knot: &mut (i32, i32), dir: &(i32, i32)) {
+    knot.0 += dir.0;
+    knot.1 += dir.1;
+}
+
+fn parse_input(input: &str) -> Vec<((i32, i32), i32)> {
+    input
+        .lines()
+        .map(|line| line.split_once(' ').unwrap())
+        .map(|(dir, amt)| (parse_dir(dir).unwrap(), amt.parse::<i32>().unwrap()))
+        .collect_vec()
+}
+
+fn parse_dir(dir: &str) -> Option<(i32, i32)> {
     match dir {
         "U" => Some((0, 1)),
         "D" => Some((0, -1)),
@@ -50,14 +68,6 @@ fn move_dir(dir: &str) -> Option<(i32, i32)> {
         "R" => Some((1, 0)),
         _ => None,
     }
-}
-
-fn parse_input(input: &str) -> Vec<((i32, i32), i32)> {
-    input
-        .lines()
-        .map(|line| line.split_once(' ').unwrap())
-        .map(|(dir, amt)| (move_dir(dir).unwrap(), amt.parse::<i32>().unwrap()))
-        .collect_vec()
 }
 
 fn main() {
