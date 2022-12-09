@@ -1,5 +1,3 @@
-use std::collections::VecDeque;
-
 use itertools::Itertools;
 
 pub type Move = (u32, usize, usize);
@@ -7,12 +5,12 @@ pub type Move = (u32, usize, usize);
 pub fn part_one(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);
 
-    for (move_counter, from_stack, to_stack) in moves {
-        for _ in 0..move_counter {
-            let move_val = stacks[from_stack].pop_back().unwrap();
-            stacks[to_stack].push_back(move_val);
-        }
-    }
+    moves.iter().for_each(|(count, from, to)| {
+        (0..*count).for_each(|_| {
+            let c = stacks[*from].pop().unwrap();
+            stacks[*to].push(c);
+        })
+    });
 
     Some(collect_stack_tops(&stacks))
 }
@@ -20,17 +18,17 @@ pub fn part_one(input: &str) -> Option<String> {
 pub fn part_two(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);
 
-    for (move_counter, from_stack, to_stack) in moves {
-        let at = stacks[from_stack].len() - move_counter as usize;
+    moves.iter().for_each(|(count, from, to)| {
+        let at = stacks[*from].len() - *count as usize;
 
-        let mut to_move = stacks[from_stack].split_off(at);
-        stacks[to_stack].append(&mut to_move);
-    }
+        let mut to_move = stacks[*from].split_off(at);
+        stacks[*to].append(&mut to_move);
+    });
 
     Some(collect_stack_tops(&stacks))
 }
 
-fn collect_stack_tops(stacks: &[VecDeque<char>]) -> String {
+fn collect_stack_tops(stacks: &[Vec<char>]) -> String {
     stacks
         .iter()
         .filter_map(|stack| stack.iter().last())
@@ -52,14 +50,14 @@ fn parse_moves(input: &str) -> Vec<Move> {
         .collect_vec()
 }
 
-fn parse_stacks(input: &str) -> Vec<VecDeque<char>> {
+fn parse_stacks(input: &str) -> Vec<Vec<char>> {
     let stack_count = (input.lines().next().unwrap().len() + 1) / 4;
-    let mut stacks = vec![VecDeque::new(); stack_count];
+    let mut stacks = vec![Vec::new(); stack_count];
 
     for line in input.rsplit('\n').skip(1) {
         for (i, v) in line.chars().skip(1).step_by(4).enumerate() {
             if v != ' ' {
-                stacks.get_mut(i).unwrap().push_back(v);
+                stacks.get_mut(i).unwrap().push(v);
             }
         }
     }
@@ -67,7 +65,7 @@ fn parse_stacks(input: &str) -> Vec<VecDeque<char>> {
     stacks
 }
 
-fn parse_input(input: &str) -> (Vec<VecDeque<char>>, Vec<Move>) {
+fn parse_input(input: &str) -> (Vec<Vec<char>>, Vec<Move>) {
     let (stacks, moves) = input.split_at(input.find("\n\n").unwrap());
 
     (parse_stacks(stacks), parse_moves(moves))
