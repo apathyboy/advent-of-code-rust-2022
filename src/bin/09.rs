@@ -1,49 +1,45 @@
 use itertools::Itertools;
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let motions = parse_input(input);
-
-    let mut visited: Vec<(i32, i32)> = Vec::new();
-    let mut head = (0, 0);
-    let mut tail = (0, 0);
-
-    for (dir, amt) in motions {
-        let motion = move_dir(dir).unwrap();
-
-        for _ in 0..amt {
-            head.0 += motion.0;
-            head.1 += motion.1;
-
-            if (head.0 - tail.0).abs() > 1 || (head.1 - tail.1).abs() > 1 {
-                tail.0 += motion.0;
-                tail.1 += motion.1;
-
-                if motion.0 != 0 && tail.1 != head.1 {
-                    if tail.1 > head.1 {
-                        tail.1 -= 1;
-                    } else {
-                        tail.1 += 1;
-                    }
-                }
-
-                if motion.1 != 0 && tail.0 != head.0 {
-                    if tail.0 > head.0 {
-                        tail.0 -= 1;
-                    } else {
-                        tail.0 += 1;
-                    }
-                }
-            }
-
-            visited.push(tail);
-        }
-    }
-
-    Some(visited.iter().unique().count() as u32)
+    model(input, 2)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u32> {
+    model(input, 10)
+}
+
+fn model(input: &str, knot_count: usize) -> Option<u32> {
+    let motions = parse_input(input);
+    let mut knots: Vec<(i32, i32)> = vec![(0, 0); knot_count];
+
+    let unique_visits = motions
+        .iter()
+        .flat_map(|(motion, amt)| -> Vec<(i32, i32)> {
+            (0..*amt)
+                .map(|_| -> (i32, i32) {
+                    knots[0].0 += motion.0;
+                    knots[0].1 += motion.1;
+
+                    for i in 1..knots.len() {
+                        let x_diff = knots[i - 1].0 - knots[i].0;
+                        let y_diff = knots[i - 1].1 - knots[i].1;
+
+                        if (x_diff).abs() > 1 || (y_diff).abs() > 1 {
+                            let follow_motion = (x_diff.signum(), y_diff.signum());
+
+                            knots[i].0 += follow_motion.0;
+                            knots[i].1 += follow_motion.1;
+                        }
+                    }
+
+                    knots[knot_count - 1]
+                })
+                .collect_vec()
+        })
+        .unique()
+        .count();
+
+    Some(unique_visits as u32)
 }
 
 fn move_dir(dir: &str) -> Option<(i32, i32)> {
@@ -56,14 +52,11 @@ fn move_dir(dir: &str) -> Option<(i32, i32)> {
     }
 }
 
-fn parse_input(input: &str) -> Vec<(&str, i32)> {
+fn parse_input(input: &str) -> Vec<((i32, i32), i32)> {
     input
         .lines()
-        .map(|line| -> (&str, i32) {
-            let (dir, amt) = line.split_once(' ').unwrap();
-
-            (dir, amt.parse::<i32>().unwrap())
-        })
+        .map(|line| line.split_once(' ').unwrap())
+        .map(|(dir, amt)| (move_dir(dir).unwrap(), amt.parse::<i32>().unwrap()))
         .collect_vec()
 }
 
@@ -86,6 +79,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 9);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(1));
     }
 }
