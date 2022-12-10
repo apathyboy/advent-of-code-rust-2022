@@ -22,8 +22,42 @@ pub fn part_one(input: &str) -> Option<i32> {
     Some(cycles.iter().skip(19).step_by(40).take(6).sum())
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<u32> {
+    let mut output = Vec::new();
+    let mut x_register = 1;
+    let mut cycle = 1;
+
+    output.push(crt_value(cycle, x_register));
+    cycle += 1;
+
+    for line in input.lines() {
+        let command = &line[..4];
+
+        output.push(crt_value(cycle, x_register));
+        cycle += 1;
+
+        if command == "addx" {
+            x_register += &line[5..].parse::<i32>().unwrap();
+            output.push(crt_value(cycle, x_register));
+            cycle += 1;
+        }
+    }
+
+    for line in output.chunks(40) {
+        println!("{:?}", line.iter().collect::<String>());
+    }
+
     None
+}
+
+fn crt_value(cycle: i32, x_register: i32) -> char {
+    let draw_pos = (cycle - 1) % 40;
+    let is_lit = draw_pos >= x_register - 1 && draw_pos <= x_register + 1;
+
+    match is_lit {
+        true => '#',
+        false => '.',
+    }
 }
 
 fn main() {
