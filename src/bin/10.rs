@@ -3,21 +3,20 @@ use itertools::Itertools;
 pub fn part_one(input: &str) -> Option<i32> {
     let mut cycles = Vec::new();
     let mut x_register = 1;
-    let mut cycle = 1;
-
-    cycles.push(x_register);
-    cycle += 1;
+    let mut cycle = 0;
 
     for line in input.lines() {
-        let command = &line[..4];
-
-        cycles.push(cycle * x_register);
-        cycle += 1;
-
-        if command == "addx" {
-            x_register += &line[5..].parse::<i32>().unwrap();
-            cycles.push(cycle * x_register);
+        if line.contains("addx") {
             cycle += 1;
+            cycles.push(cycle * x_register);
+
+            cycle += 1;
+            cycles.push(cycle * x_register);
+
+            x_register += &line[5..].parse::<i32>().unwrap();
+        } else {
+            cycle += 1;
+            cycles.push(cycle * x_register);
         }
     }
 
@@ -27,21 +26,20 @@ pub fn part_one(input: &str) -> Option<i32> {
 pub fn part_two(input: &str) -> Option<String> {
     let mut output = Vec::new();
     let mut x_register = 1;
-    let mut cycle = 1;
-
-    output.push(crt_value(cycle, x_register));
-    cycle += 1;
+    let mut cycle = 0;
 
     for line in input.lines() {
-        let command = &line[..4];
-
-        output.push(crt_value(cycle, x_register));
-        cycle += 1;
-
-        if command == "addx" {
-            x_register += &line[5..].parse::<i32>().unwrap();
-            output.push(crt_value(cycle, x_register));
+        if line.contains("addx") {
             cycle += 1;
+            output.push(crt_value(cycle, x_register));
+
+            cycle += 1;
+            output.push(crt_value(cycle, x_register));
+
+            x_register += &line[5..].parse::<i32>().unwrap();
+        } else {
+            cycle += 1;
+            output.push(crt_value(cycle, x_register));
         }
     }
 
@@ -56,9 +54,7 @@ pub fn part_two(input: &str) -> Option<String> {
 
 fn crt_value(cycle: i32, x_register: i32) -> char {
     let draw_pos = (cycle - 1) % 40;
-    let is_lit = draw_pos >= x_register - 1 && draw_pos <= x_register + 1;
-
-    match is_lit {
+    match draw_pos >= x_register - 1 && draw_pos <= x_register + 1 {
         true => '#',
         false => '.',
     }
