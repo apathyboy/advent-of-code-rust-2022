@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 pub fn part_one(input: &str) -> Option<i32> {
     let mut cycles = Vec::new();
     let mut x_register = 1;
@@ -22,7 +24,7 @@ pub fn part_one(input: &str) -> Option<i32> {
     Some(cycles.iter().skip(19).step_by(40).take(6).sum())
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<String> {
     let mut output = Vec::new();
     let mut x_register = 1;
     let mut cycle = 1;
@@ -43,11 +45,13 @@ pub fn part_two(input: &str) -> Option<u32> {
         }
     }
 
-    for line in output.chunks(40) {
-        println!("{:?}", line.iter().collect::<String>());
-    }
+    let display = output
+        .chunks(40)
+        .map(|c| c.iter().collect::<String>())
+        .take(6)
+        .join("\n");
 
-    None
+    Some(display)
 }
 
 fn crt_value(cycle: i32, x_register: i32) -> char {
@@ -79,6 +83,14 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 10);
-        assert_eq!(part_two(&input), None);
+        let string = "##..##..##..##..##..##..##..##..##..##..
+###...###...###...###...###...###...###.
+####....####....####....####....####....
+#####.....#####.....#####.....#####.....
+######......######......######......####
+#######.......#######.......#######....."
+            .to_string();
+
+        assert_eq!(part_two(&input), Some(string));
     }
 }
