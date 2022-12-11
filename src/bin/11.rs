@@ -37,7 +37,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 pub fn part_two(input: &str) -> Option<u64> {
     let mut monkeys = parse(input);
 
-    let lcm = monkeys
+    let gcd = monkeys
         .iter()
         .map(|m| m.test_val)
         .reduce(|accum, item| accum * item)
@@ -51,8 +51,8 @@ pub fn part_two(input: &str) -> Option<u64> {
                 monkeys[i].inspected_count += 1;
                 item = perform_operation(&(monkeys[i].operation), item);
 
-                if item > lcm {
-                    item %= lcm;
+                if item > gcd {
+                    item %= gcd;
                 }
 
                 if item % monkeys[i].test_val == 0 {
