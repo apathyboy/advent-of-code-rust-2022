@@ -3,16 +3,15 @@ use std::collections::{HashMap, VecDeque};
 pub fn part_one(input: &str) -> Option<u16> {
     let (map, start, end) = parse_input(input);
 
-    let visited = explore(&map, start, ExploreDirection::StartToEnd);
-    Some(*visited.get(&(end.0, end.1)).unwrap())
+    explore(&map, start, ExploreDirection::StartToEnd)
+        .iter()
+        .find_map(|(p, steps)| if *p == end { Some(*steps) } else { None })
 }
 
 pub fn part_two(input: &str) -> Option<u16> {
     let (map, _, end) = parse_input(input);
 
-    let visited = explore(&map, end, ExploreDirection::EndToStart);
-
-    visited
+    explore(&map, end, ExploreDirection::EndToStart)
         .iter()
         .filter_map(|(p, steps)| match map.get(&(p.0, p.1)) {
             Some('a') => Some(*steps),
@@ -23,9 +22,10 @@ pub fn part_two(input: &str) -> Option<u16> {
 
 type Point = (i16, i16);
 
+#[derive(Clone, Copy)]
 enum ExploreDirection {
-    StartToEnd,
-    EndToStart,
+    StartToEnd = 1,
+    EndToStart = -1,
 }
 
 fn explore(
@@ -33,32 +33,22 @@ fn explore(
     start: Point,
     direction: ExploreDirection,
 ) -> HashMap<Point, u16> {
-    let mut visited: HashMap<Point, u16> = HashMap::new();
-    let mut visit: VecDeque<Point> = VecDeque::new();
-
-    visited.insert(start, 0);
-    visit.push_back(start);
-
-    let check = match direction {
-        ExploreDirection::StartToEnd => 1,
-        ExploreDirection::EndToStart => -1,
-    };
+    let mut visited: HashMap<Point, u16> = HashMap::from([(start, 0)]);
+    let mut visit: VecDeque<Point> = VecDeque::from([start]);
 
     while !visit.is_empty() {
-        let (cur_x, cur_y) = visit.pop_front().unwrap();
+        let cur = visit.pop_front().unwrap();
+        let cur_val = *map.get(&cur).unwrap() as i16;
 
-        for (dest_x, dest_y) in [(0, 1), (0, -1), (1, 0), (-1, 0)] {
-            let (nx, ny) = (cur_x + dest_x, cur_y + dest_y);
+        for step in [(0, 1), (0, -1), (1, 0), (-1, 0)] {
+            let next = (cur.0 + step.0, cur.1 + step.1);
 
-            if map.contains_key(&(nx, ny))
-                && !visited.contains_key(&(nx, ny))
-                && (*map.get(&(nx, ny)).unwrap() as i16 - *map.get(&(cur_x, cur_y)).unwrap() as i16)
-                    * check
-                    <= 1
+            if map.contains_key(&next)
+                && !visited.contains_key(&next)
+                && (*map.get(&next).unwrap() as i16 - cur_val) * (direction as i16) <= 1
             {
-                let nv = visited.get(&(cur_x, cur_y)).unwrap() + 1;
-                visit.push_back((nx, ny));
-                visited.insert((nx, ny), nv);
+                visit.push_back(next);
+                visited.insert(next, visited.get(&cur).unwrap() + 1);
             }
         }
     }
