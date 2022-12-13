@@ -30,10 +30,17 @@ pub fn part_two(input: &str) -> Option<u32> {
     packets.extend_from_slice(&[div1.clone(), div2.clone()]);
     packets.sort();
 
-    let pos1 = packets.iter().position(|e| e == &div1).unwrap() + 1;
-    let pos2 = packets.iter().position(|e| e == &div2).unwrap() + 1;
-
-    Some((pos1 * pos2) as u32)
+    packets
+        .iter()
+        .enumerate()
+        .filter_map(|(idx, p)| {
+            if *p == div1 || *p == div2 {
+                Some(idx as u32 + 1)
+            } else {
+                None
+            }
+        })
+        .reduce(|a, b| a * b)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
