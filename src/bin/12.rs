@@ -3,15 +3,19 @@ use std::collections::{HashMap, VecDeque};
 pub fn part_one(input: &str) -> Option<u16> {
     let (map, start, end) = parse_input(input);
 
-    get_distance(&map, start, end)
+    let visited = explore(&map, start, ExploreDirection::StartToEnd);
+    Some(*visited.get(&(end.0, end.1)).unwrap())
 }
 
 pub fn part_two(input: &str) -> Option<u16> {
     let (map, _, end) = parse_input(input);
 
-    map.iter()
-        .filter_map(|(p, c)| match c {
-            'a' => get_distance(&map, *p, end),
+    let visited = explore(&map, end, ExploreDirection::EndToStart);
+
+    visited
+        .iter()
+        .filter_map(|(p, steps)| match map.get(&(p.0, p.1)) {
+            Some('a') => Some(*steps),
             _ => None,
         })
         .min()
@@ -19,12 +23,26 @@ pub fn part_two(input: &str) -> Option<u16> {
 
 type Point = (i16, i16);
 
-fn get_distance(map: &HashMap<Point, char>, start: Point, end: Point) -> Option<u16> {
+enum ExploreDirection {
+    StartToEnd,
+    EndToStart,
+}
+
+fn explore(
+    map: &HashMap<Point, char>,
+    start: Point,
+    direction: ExploreDirection,
+) -> HashMap<Point, u16> {
     let mut visited: HashMap<Point, u16> = HashMap::new();
     let mut visit: VecDeque<Point> = VecDeque::new();
 
     visited.insert(start, 0);
     visit.push_back(start);
+
+    let check = match direction {
+        ExploreDirection::StartToEnd => 1,
+        ExploreDirection::EndToStart => -1,
+    };
 
     while !visit.is_empty() {
         let (cur_x, cur_y) = visit.pop_front().unwrap();
@@ -34,21 +52,18 @@ fn get_distance(map: &HashMap<Point, char>, start: Point, end: Point) -> Option<
 
             if map.contains_key(&(nx, ny))
                 && !visited.contains_key(&(nx, ny))
-                && *map.get(&(nx, ny)).unwrap() as i16 - *map.get(&(cur_x, cur_y)).unwrap() as i16
+                && (*map.get(&(nx, ny)).unwrap() as i16 - *map.get(&(cur_x, cur_y)).unwrap() as i16)
+                    * check
                     <= 1
             {
                 let nv = visited.get(&(cur_x, cur_y)).unwrap() + 1;
                 visit.push_back((nx, ny));
                 visited.insert((nx, ny), nv);
-
-                if (nx, ny) == end {
-                    return Some(nv);
-                }
             }
         }
     }
 
-    None
+    visited
 }
 
 fn parse_input(input: &str) -> (HashMap<Point, char>, Point, Point) {
