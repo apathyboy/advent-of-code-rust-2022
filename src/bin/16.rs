@@ -2,6 +2,10 @@ use std::collections::HashMap;
 
 use itertools::Itertools;
 
+// when deciding where to move next find the "benefit" of opening each other unopened valve
+// (remaining time - (1 minute * distance to valve + 1 minute to open)) * target valve pressure
+// select the highest
+
 pub fn part_one(input: &str) -> Option<i32> {
     let valve_map = parse(input);
 
