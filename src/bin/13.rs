@@ -58,10 +58,10 @@ impl PartialOrd for Packet {
 impl Ord for Packet {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (self, other) {
-            (Packet::Int(a), Packet::Int(b)) => a.cmp(b),
-            (Packet::Int(a), Packet::List(b)) => vec![Packet::Int(*a)].cmp(b),
-            (Packet::List(a), Packet::Int(b)) => a.cmp(&vec![Packet::Int(*b)]),
-            (Packet::List(a), Packet::List(b)) => a.cmp(b),
+            (Self::Int(a), Self::Int(b)) => a.cmp(b),
+            (Self::Int(a), Self::List(b)) => vec![Self::Int(*a)].cmp(b),
+            (Self::List(a), Self::Int(b)) => a.cmp(&vec![Self::Int(*b)]),
+            (Self::List(a), Self::List(b)) => a.cmp(b),
         }
     }
 }

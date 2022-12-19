@@ -43,7 +43,7 @@ fn move_instruction(
         .collect()
 }
 
-fn diff(knot1: &(i32, i32), knot2: &(i32, i32)) -> (i32, i32) {
+const fn diff(knot1: &(i32, i32), knot2: &(i32, i32)) -> (i32, i32) {
     (knot1.0 - knot2.0, knot1.1 - knot2.1)
 }
 

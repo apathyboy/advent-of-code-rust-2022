@@ -122,7 +122,7 @@ fn parse(input: &str) -> Vec<(Point, Point, i32)> {
         .collect_vec()
 }
 
-fn manhattan(p1: &Point, p2: &Point) -> i32 {
+const fn manhattan(p1: &Point, p2: &Point) -> i32 {
     (p1.0.abs_diff(p2.0) + p1.1.abs_diff(p2.1)) as i32
 }
 

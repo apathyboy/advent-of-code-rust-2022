@@ -69,7 +69,7 @@ pub fn parse_exec_time(output: &str) -> f64 {
             } else if timing.contains("ms)") {
                 acc + parse_time(timing, "ms")
             } else if timing.contains("s)") {
-                acc + parse_time(timing, "s") * 1000_f64
+                parse_time(timing, "s").mul_add(1000_f64, acc)
             } else {
                 acc
             }

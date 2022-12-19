@@ -18,11 +18,11 @@ pub fn part_two(input: &str) -> Option<usize> {
     Some(overlaps)
 }
 
-fn contains(input: &[u32]) -> bool {
+const fn contains(input: &[u32]) -> bool {
     (input[0] <= input[2] && input[1] >= input[3]) || (input[0] >= input[2] && input[1] <= input[3])
 }
 
-fn overlaps(input: &[u32]) -> bool {
+const fn overlaps(input: &[u32]) -> bool {
     !(input[2] > input[1] || input[3] < input[0])
 }
 

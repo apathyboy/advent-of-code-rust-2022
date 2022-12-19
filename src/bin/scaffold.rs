@@ -8,11 +8,11 @@ use std::{
     process,
 };
 
-const MODULE_TEMPLATE: &str = r###"pub fn part_one(input: &str) -> Option<u32> {
+const MODULE_TEMPLATE: &str = r###"pub fn part_one(_input: &str) -> Option<u32> {
     None
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(_input: &str) -> Option<u32> {
     None
 }
 
@@ -54,13 +54,13 @@ fn create_file(path: &str) -> Result<File, std::io::Error> {
 }
 
 fn main() {
-    let day = match parse_args() {
-        Ok(day) => day,
-        Err(_) => {
+    let day = parse_args().map_or_else(
+        |_| {
             eprintln!("Need to specify a day (as integer). example: `cargo scaffold 7`");
             process::exit(1);
-        }
-    };
+        },
+        |day| day,
+    );
 
     let day_padded = format!("{:02}", day);
 
