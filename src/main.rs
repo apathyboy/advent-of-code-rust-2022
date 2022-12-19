@@ -8,7 +8,7 @@ use std::process::Command;
 fn main() {
     let total: f64 = (1..=25)
         .map(|day| {
-            let day = format!("{:02}", day);
+            let day = format!("{day:02}");
 
             let cmd = Command::new("cargo")
                 .args(["run", "--release", "--bin", &day])
@@ -39,8 +39,5 @@ fn main() {
         })
         .sum();
 
-    println!(
-        "{}Total:{} {}{:.2}ms{}",
-        ANSI_BOLD, ANSI_RESET, ANSI_ITALIC, total, ANSI_RESET
-    );
+    println!("{ANSI_BOLD}Total:{ANSI_RESET} {ANSI_ITALIC}{total:.2}ms{ANSI_RESET}");
 }
