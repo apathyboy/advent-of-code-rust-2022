@@ -3,7 +3,7 @@ use std::collections::HashMap;
 pub fn part_one(input: &str) -> Option<u64> {
     let total = read_directory_sizes(input)
         .iter()
-        .filter(|size| **size < 100000)
+        .filter(|&size| *size < 100000)
         .sum();
 
     Some(total)
@@ -67,10 +67,7 @@ fn read_directory_sizes(input: &str) -> Vec<u64> {
         }
     }
 
-    dir_structure
-        .iter()
-        .map(|(_, size)| *size)
-        .collect::<Vec<_>>()
+    dir_structure.values().copied().collect::<Vec<u64>>()
 }
 
 fn main() {

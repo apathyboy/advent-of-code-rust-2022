@@ -68,7 +68,7 @@ pub fn part_two(input: &str) -> Option<u64> {
 
     let monkey_business_level = monkeys
         .iter()
-        .map(|m| m.inspected_count as u64)
+        .map(|m| m.inspected_count)
         .sorted_by(|a, b| Ord::cmp(&b, &a))
         .take(2)
         .reduce(|accum, item| accum * item)
