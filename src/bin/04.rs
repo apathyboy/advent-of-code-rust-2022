@@ -1,3 +1,4 @@
+#[must_use]
 pub fn part_one(input: &str) -> Option<usize> {
     let fully_contains = input
         .lines()
@@ -8,6 +9,7 @@ pub fn part_one(input: &str) -> Option<usize> {
     Some(fully_contains)
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<usize> {
     let overlaps = input
         .lines()

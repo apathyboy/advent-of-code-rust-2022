@@ -2,6 +2,7 @@ use itertools::Itertools;
 
 pub type Move = (u32, usize, usize);
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);
 
@@ -15,6 +16,7 @@ pub fn part_one(input: &str) -> Option<String> {
     Some(collect_stack_tops(&stacks))
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);
 

@@ -1,5 +1,6 @@
 use itertools::Itertools;
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<u32> {
     let mut pos: usize = 4;
     while pos < input.chars().count() {
@@ -14,6 +15,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(pos as u32)
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<u32> {
     let mut pos: usize = 14;
     while pos < input.chars().count() {

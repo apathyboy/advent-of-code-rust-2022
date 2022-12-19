@@ -4,6 +4,7 @@ use nom::{
     multi::separated_list0, sequence::delimited, IResult,
 };
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<u32> {
     let sum_of_indices = parse(input)
         .iter()
@@ -21,6 +22,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(sum_of_indices)
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<u32> {
     let mut packets = parse(input);
 

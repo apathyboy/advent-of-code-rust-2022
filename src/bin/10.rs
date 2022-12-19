@@ -1,5 +1,6 @@
 use itertools::Itertools;
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<i32> {
     let mut cycles = Vec::new();
     let mut x_register = 1;
@@ -20,6 +21,7 @@ pub fn part_one(input: &str) -> Option<i32> {
     Some(cycles.iter().skip(19).step_by(40).take(6).sum())
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<String> {
     let mut output = Vec::new();
     let mut x_register = 1;

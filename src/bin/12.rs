@@ -1,5 +1,6 @@
 use std::collections::{HashMap, VecDeque};
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<u16> {
     let (map, start, end) = parse_input(input);
 
@@ -8,6 +9,7 @@ pub fn part_one(input: &str) -> Option<u16> {
         .find_map(|(p, steps)| if *p == end { Some(*steps) } else { None })
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<u16> {
     let (map, _, end) = parse_input(input);
 

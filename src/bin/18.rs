@@ -14,6 +14,7 @@ use itertools::Itertools;
 // 2,1,5 -> 2 + 2 + 2 = 6
 // 2,3,5 -> 2 + 2 + 2 = 6
 // tot =
+#[must_use]
 pub fn part_one(input: &str) -> Option<u16> {
     let cubes = parse(input);
     let mut open_faces = 0;
@@ -40,6 +41,7 @@ pub fn part_one(input: &str) -> Option<u16> {
 // 2,1,5 ->
 // 2,3,5 ->
 // tot =
+#[must_use]
 pub fn part_two(input: &str) -> Option<u16> {
     let _cubes = parse(input);
 

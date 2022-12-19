@@ -1,5 +1,6 @@
 use itertools::Itertools;
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<u32> {
     input
         .lines()
@@ -15,6 +16,7 @@ pub fn part_one(input: &str) -> Option<u32> {
         .sum()
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<u32> {
     input
         .lines()

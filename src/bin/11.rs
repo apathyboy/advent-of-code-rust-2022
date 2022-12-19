@@ -1,5 +1,6 @@
 use itertools::Itertools;
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<u32> {
     let mut monkeys = parse(input);
 
@@ -34,6 +35,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(monkey_business_level)
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<u64> {
     let mut monkeys = parse(input);
 

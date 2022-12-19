@@ -1,6 +1,7 @@
 use itertools::Itertools;
 use regex::Regex;
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<i32> {
     let sensor_beacon_pairs = parse(input);
     let n = if sensor_beacon_pairs.len() == 14 {
@@ -41,6 +42,7 @@ pub fn part_one(input: &str) -> Option<i32> {
     }
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<i64> {
     let sensor_beacon_pairs = parse(input);
     let max_rowscols = if sensor_beacon_pairs.len() == 14 {

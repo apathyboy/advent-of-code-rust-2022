@@ -1,6 +1,7 @@
 use itertools::Itertools;
 use std::cmp::{max, min};
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<u32> {
     let mut map = parse(input);
     let max_y = find_max_y(&map);
@@ -22,6 +23,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     }
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<u32> {
     let mut map = parse(input);
     let floor_y = find_max_y(&map) + 2;

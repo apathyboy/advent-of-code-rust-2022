@@ -1,5 +1,6 @@
 use itertools::Itertools;
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<u32> {
     let (map, x_max, y_max) = parse_map(input);
 
@@ -11,6 +12,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(visible)
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<u32> {
     let (map, x_max, y_max) = parse_map(input);
 

@@ -1,7 +1,9 @@
+#[must_use]
 pub fn part_one(_input: &str) -> Option<u32> {
     None
 }
 
+#[must_use]
 pub fn part_two(_input: &str) -> Option<u32> {
     None
 }
