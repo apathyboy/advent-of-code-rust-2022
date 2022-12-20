@@ -9,8 +9,13 @@ jobs:
     check:
         runs-on: ubuntu-latest
         name: Check
-        steps:
+        steps:     
             - uses: actions/checkout@v2
+            - name: update local toolchain
+              run: |
+                rustup update
+                rustup component add clippy
+                rustup install nightly   
             - name: cargo check
               run: cargo check
     test:
@@ -18,6 +23,11 @@ jobs:
         name: Test
         steps:
             - uses: actions/checkout@v2
+            - name: update local toolchain
+              run: |
+                rustup update
+                rustup component add clippy
+                rustup install nightly   
             - name: cargo test
               run: cargo test
     clippy:
@@ -25,5 +35,10 @@ jobs:
         name: Lint (clippy)
         steps:
             - uses: actions/checkout@v2
+            - name: update local toolchain
+              run: |
+                rustup update
+                rustup component add clippy
+                rustup install nightly   
             - name: cargo clippy
               run: cargo clippy -- -D warnings
