@@ -7,7 +7,7 @@ pub fn part_one(input: &str) -> Option<i32> {
     let n = if sensor_beacon_pairs.len() == 14 {
         10
     } else {
-        2000000
+        2_000_000
     };
 
     let mut x_min = i32::MAX;
@@ -17,7 +17,7 @@ pub fn part_one(input: &str) -> Option<i32> {
 
     for (sensor, _, dist) in sensor_beacon_pairs {
         let y_diff = (sensor.1 - n).abs();
-        let x_remainder = dist - y_diff;
+        let x_remainder = (-y_diff).wrapping_add_unsigned(dist);
 
         if x_remainder >= 0 {
             let x_left = sensor.0 - x_remainder;
@@ -25,7 +25,7 @@ pub fn part_one(input: &str) -> Option<i32> {
             x_min = x_min.min(x_left);
             x_max = x_max.max(x_right);
 
-            ranges.push((x_left, x_right))
+            ranges.push((x_left, x_right));
         }
     }
 
@@ -43,7 +43,7 @@ pub fn part_one(input: &str) -> Option<i32> {
 }
 
 #[must_use]
-pub fn part_two(input: &str) -> Option<i64> {
+pub fn part_two(input: &str) -> Option<i32> {
     let sensor_beacon_pairs = parse(input);
     let max_rowscols = if sensor_beacon_pairs.len() == 14 {
         20
@@ -59,7 +59,7 @@ pub fn part_two(input: &str) -> Option<i64> {
 
         for (sensor, _, dist) in &sensor_beacon_pairs {
             let y_diff = (sensor.1 - n).abs();
-            let x_remainder = dist - y_diff;
+            let x_remainder = (-y_diff).wrapping_add_unsigned(*dist);
 
             if x_remainder >= 0 {
                 let x_left = sensor.0 - x_remainder;
@@ -67,14 +67,14 @@ pub fn part_two(input: &str) -> Option<i64> {
                 x_min = x_min.min(x_left);
                 x_max = x_max.max(x_right);
 
-                ranges.push((x_left, x_right))
+                ranges.push((x_left, x_right));
             }
         }
 
         ranges.sort_by_key(|r| r.0);
 
         if let Some(gap) = has_gap(&ranges) {
-            return Some((gap as i64 * 4_000_000) + n as i64);
+            return Some((gap * 4_000_000) + n);
         }
     }
 
@@ -99,7 +99,7 @@ fn has_gap(ranges: &[(i32, i32)]) -> Option<i32> {
     None
 }
 
-fn parse(input: &str) -> Vec<(Point, Point, i32)> {
+fn parse(input: &str) -> Vec<(Point, Point, u32)> {
     let re = Regex::new(
         r"Sensor at x=([-]?\d+), y=([-]?\d+): closest beacon is at x=([-]?\d+), y=([-]?\d+)",
     )
@@ -107,7 +107,7 @@ fn parse(input: &str) -> Vec<(Point, Point, i32)> {
 
     input
         .lines()
-        .map(|l| -> (Point, Point, i32) {
+        .map(|l| -> (Point, Point, u32) {
             let cap = re.captures(l).unwrap();
 
             let sensor = (
@@ -119,13 +119,13 @@ fn parse(input: &str) -> Vec<(Point, Point, i32)> {
                 cap.get(4).unwrap().as_str().parse::<i32>().unwrap(),
             );
 
-            (sensor, beacon, manhattan(&sensor, &beacon))
+            (sensor, beacon, manhattan(sensor, beacon))
         })
         .collect_vec()
 }
 
-const fn manhattan(p1: &Point, p2: &Point) -> i32 {
-    (p1.0.abs_diff(p2.0) + p1.1.abs_diff(p2.1)) as i32
+const fn manhattan(p1: Point, p2: Point) -> u32 {
+    p1.0.abs_diff(p2.0) + p1.1.abs_diff(p2.1)
 }
 
 fn main() {

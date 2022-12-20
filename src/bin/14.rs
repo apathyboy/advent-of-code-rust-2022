@@ -10,7 +10,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     loop {
         let mut sand = (500, 0);
 
-        while let Some(next_move) = find_next_move(&map, &sand, max_y + 2) {
+        while let Some(next_move) = find_next_move(&map, sand, max_y + 2) {
             if next_move.1 == max_y {
                 return Some(sand_counter);
             }
@@ -32,7 +32,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     loop {
         let mut sand = (500, 0);
 
-        while let Some(next_move) = find_next_move(&map, &sand, floor_y) {
+        while let Some(next_move) = find_next_move(&map, sand, floor_y) {
             sand = next_move;
         }
 
@@ -47,15 +47,15 @@ pub fn part_two(input: &str) -> Option<u32> {
 
 type Point = (i16, i16);
 
-fn find_next_move(map: &[Point], sand: &Point, floor: i16) -> Option<Point> {
+fn find_next_move(map: &[Point], sand: Point, floor: i16) -> Option<Point> {
     let (x_check, y_check) = sand;
 
     if y_check + 1 == floor {
         return None;
     }
 
-    if !map.contains(&(*x_check, y_check + 1)) {
-        Some((*x_check, y_check + 1))
+    if !map.contains(&(x_check, y_check + 1)) {
+        Some((x_check, y_check + 1))
     } else if !map.contains(&(x_check - 1, y_check + 1)) {
         Some((x_check - 1, y_check + 1))
     } else if !map.contains(&(x_check + 1, y_check + 1)) {

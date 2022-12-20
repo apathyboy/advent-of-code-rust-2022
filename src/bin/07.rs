@@ -4,7 +4,7 @@ use std::collections::HashMap;
 pub fn part_one(input: &str) -> Option<u64> {
     let total = read_directory_sizes(input)
         .iter()
-        .filter(|&size| *size < 100000)
+        .filter(|&size| *size < 100_000)
         .sum();
 
     Some(total)
@@ -15,13 +15,16 @@ pub fn part_two(input: &str) -> Option<u64> {
     let dir_sizes = read_directory_sizes(input);
 
     let cur_usage = *dir_sizes.iter().max().unwrap();
-    let required_space = cur_usage - 40000000;
+    let required_space = cur_usage - 40_000_000;
 
     dir_sizes
         .iter()
-        .filter_map(|size| match *size >= required_space {
-            true => Some(*size),
-            _ => None,
+        .filter_map(|size| {
+            if *size >= required_space {
+                Some(*size)
+            } else {
+                None
+            }
         })
         .min()
 }
@@ -44,22 +47,25 @@ fn read_directory_sizes(input: &str) -> Vec<u64> {
             .collect::<Vec<&str>>();
 
         if command[0] == "cd" {
-            if command[1] != ".." {
+            if command[1] == ".." {
+                _ = current_path.pop();
+            } else {
                 current_path.push(command[1]);
                 dir_structure.insert(current_path.join("/"), 0);
-            } else {
-                _ = current_path.pop();
             }
         } else if command[0] == "ls" {
             let dir_size = lines
                 .map(|s| s.split(' ').next().unwrap())
-                .filter_map(|s| match s.chars().next().unwrap().is_numeric() {
-                    true => Some(s.parse::<u64>().unwrap()),
-                    _ => None,
+                .filter_map(|s| {
+                    if s.chars().next().unwrap().is_numeric() {
+                        Some(s.parse::<u64>().unwrap())
+                    } else {
+                        None
+                    }
                 })
                 .sum::<u64>();
 
-            let mut dir = "".to_string();
+            let mut dir = String::new();
 
             for d in current_path.clone() {
                 dir.push_str(d);

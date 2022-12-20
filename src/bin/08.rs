@@ -1,19 +1,19 @@
 use itertools::Itertools;
 
 #[must_use]
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let (map, x_max, y_max) = parse_map(input);
 
     let visible = (0..y_max)
         .cartesian_product(0..x_max)
         .filter(|(x, y)| visibility_check(&map, *x, x_max, *y, y_max))
-        .count() as u32;
+        .count();
 
     Some(visible)
 }
 
 #[must_use]
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     let (map, x_max, y_max) = parse_map(input);
 
     (1..y_max - 1)
@@ -31,13 +31,13 @@ fn visibility_check(map: &[Vec<u32>], x: usize, x_max: usize, y: usize, y_max: u
         || (y + 1..y_max).all(|j| map[j][x] < c)
 }
 
-fn scenic_score(map: &[Vec<u32>], x: usize, x_max: usize, y: usize, y_max: usize) -> u32 {
+fn scenic_score(map: &[Vec<u32>], x: usize, x_max: usize, y: usize, y_max: usize) -> usize {
     let c = map[y][x];
 
-    ((1 + (1..x).rev().take_while(|&i| map[y][i] < c).count())
+    (1 + (1..x).rev().take_while(|&i| map[y][i] < c).count())
         * (1 + (x + 1..x_max - 1).take_while(|&i| map[y][i] < c).count())
         * (1 + (1..y).rev().take_while(|&i| map[i][x] < c).count())
-        * (1 + (y + 1..y_max - 1).take_while(|&i| map[i][x] < c).count())) as u32
+        * (1 + (y + 1..y_max - 1).take_while(|&i| map[i][x] < c).count())
 }
 
 fn parse_map(input: &str) -> (Vec<Vec<u32>>, usize, usize) {

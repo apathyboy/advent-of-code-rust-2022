@@ -6,12 +6,12 @@ pub type Move = (u32, usize, usize);
 pub fn part_one(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);
 
-    moves.iter().for_each(|(count, from, to)| {
+    for (count, from, to) in &moves {
         (0..*count).for_each(|_| {
             let c = stacks[*from].pop().unwrap();
             stacks[*to].push(c);
-        })
-    });
+        });
+    }
 
     Some(collect_stack_tops(&stacks))
 }
@@ -20,12 +20,12 @@ pub fn part_one(input: &str) -> Option<String> {
 pub fn part_two(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);
 
-    moves.iter().for_each(|(count, from, to)| {
+    for (count, from, to) in &moves {
         let at = stacks[*from].len() - *count as usize;
 
         let mut to_move = stacks[*from].split_off(at);
         stacks[*to].append(&mut to_move);
-    });
+    }
 
     Some(collect_stack_tops(&stacks))
 }

@@ -16,7 +16,7 @@ fn main() {
                 .unwrap();
 
             println!("----------");
-            println!("{}| Day {} |{}", ANSI_BOLD, day, ANSI_RESET);
+            println!("{ANSI_BOLD}| Day {day} |{ANSI_RESET}");
             println!("----------");
 
             let output = String::from_utf8(cmd.stdout).unwrap();

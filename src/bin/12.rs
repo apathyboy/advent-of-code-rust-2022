@@ -67,14 +67,26 @@ fn parse_input(input: &str) -> (HashMap<Point, char>, Point, Point) {
         for (x, c) in line.chars().enumerate() {
             let mut height = c;
             if c.eq(&'S') {
-                start = (x as i16, y as i16);
-                height = 'a'
+                start = (
+                    i16::try_from(x).ok().unwrap(),
+                    i16::try_from(y).ok().unwrap(),
+                );
+                height = 'a';
             } else if c.eq(&'E') {
-                end = (x as i16, y as i16);
+                end = (
+                    i16::try_from(x).ok().unwrap(),
+                    i16::try_from(y).ok().unwrap(),
+                );
                 height = 'z';
             }
 
-            map.insert((x as i16, y as i16), height);
+            map.insert(
+                (
+                    i16::try_from(x).ok().unwrap(),
+                    i16::try_from(y).ok().unwrap(),
+                ),
+                height,
+            );
         }
     }
 

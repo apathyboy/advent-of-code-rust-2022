@@ -5,25 +5,27 @@ use nom::{
 };
 
 #[must_use]
-pub fn part_one(input: &str) -> Option<u32> {
+pub fn part_one(input: &str) -> Option<usize> {
     let sum_of_indices = parse(input)
         .iter()
         .tuples()
         .enumerate()
-        .filter_map(|(idx, (left, right))| {
-            if left < right {
-                Some(idx as u32 + 1)
-            } else {
-                None
-            }
-        })
+        .filter_map(
+            |(idx, (left, right))| {
+                if left < right {
+                    Some(idx + 1)
+                } else {
+                    None
+                }
+            },
+        )
         .sum();
 
     Some(sum_of_indices)
 }
 
 #[must_use]
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<usize> {
     let mut packets = parse(input);
 
     let div1 = Packet::List(vec![Packet::List(vec![Packet::Int(2)])]);
@@ -37,7 +39,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         .enumerate()
         .filter_map(|(idx, p)| {
             if *p == div1 || *p == div2 {
-                Some(idx as u32 + 1)
+                Some(idx + 1)
             } else {
                 None
             }

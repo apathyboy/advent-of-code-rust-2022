@@ -50,9 +50,10 @@ pub fn part_two(input: &str) -> Option<String> {
 
 const fn crt_value(cycle: i32, x_register: i32) -> char {
     let draw_pos = (cycle - 1) % 40;
-    match draw_pos >= x_register - 1 && draw_pos <= x_register + 1 {
-        true => '#',
-        false => '.',
+    if draw_pos >= x_register - 1 && draw_pos <= x_register + 1 {
+        '#'
+    } else {
+        '.'
     }
 }
 
