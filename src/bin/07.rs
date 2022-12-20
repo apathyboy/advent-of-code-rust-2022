@@ -10,6 +10,9 @@ pub fn part_one(input: &str) -> Option<u64> {
     Some(total)
 }
 
+/// # Panics
+///
+/// Will panic if `read_directory_sizes` result is empty
 #[must_use]
 pub fn part_two(input: &str) -> Option<u64> {
     let dir_sizes = read_directory_sizes(input);

@@ -43,7 +43,7 @@ pub fn part_one(input: &str) -> Option<i32> {
 }
 
 #[must_use]
-pub fn part_two(input: &str) -> Option<i32> {
+pub fn part_two(input: &str) -> Option<i64> {
     let sensor_beacon_pairs = parse(input);
     let max_rowscols = if sensor_beacon_pairs.len() == 14 {
         20
@@ -74,7 +74,7 @@ pub fn part_two(input: &str) -> Option<i32> {
         ranges.sort_by_key(|r| r.0);
 
         if let Some(gap) = has_gap(&ranges) {
-            return Some((gap * 4_000_000) + n);
+            return Some((i64::from(gap) * 4_000_000_i64) + i64::from(n));
         }
     }
 

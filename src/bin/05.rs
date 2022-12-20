@@ -2,6 +2,9 @@ use itertools::Itertools;
 
 pub type Move = (u32, usize, usize);
 
+/// # Panics
+///
+/// Will panic if stack is empty when popping
 #[must_use]
 pub fn part_one(input: &str) -> Option<String> {
     let (mut stacks, moves) = parse_input(input);

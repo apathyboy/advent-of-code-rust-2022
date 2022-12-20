@@ -1,5 +1,8 @@
 use itertools::Itertools;
 
+/// # Panics
+///
+/// Will panic if line is invalid format
 #[must_use]
 pub fn part_one(input: &str) -> Option<i32> {
     let mut cycles = Vec::new();
@@ -21,6 +24,9 @@ pub fn part_one(input: &str) -> Option<i32> {
     Some(cycles.iter().skip(19).step_by(40).take(6).sum())
 }
 
+/// # Panics
+///
+/// Will panic if line is invalid format
 #[must_use]
 pub fn part_two(input: &str) -> Option<String> {
     let mut output = Vec::new();

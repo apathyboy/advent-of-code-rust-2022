@@ -1,5 +1,8 @@
 use itertools::Itertools;
 
+/// # Panics
+///
+/// Will panic if input is invalid
 #[must_use]
 pub fn part_one(input: &str) -> Option<usize> {
     let mut monkeys = parse(input);
@@ -35,6 +38,9 @@ pub fn part_one(input: &str) -> Option<usize> {
     Some(monkey_business_level)
 }
 
+/// # Panics
+///
+/// Will panic if input is invalid
 #[must_use]
 pub fn part_two(input: &str) -> Option<usize> {
     let mut monkeys = parse(input);
