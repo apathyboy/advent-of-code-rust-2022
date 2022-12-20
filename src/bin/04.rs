@@ -31,7 +31,12 @@ const fn overlaps(input: &[u32]) -> bool {
 fn parse(input: &str) -> Vec<u32> {
     input
         .split(',')
-        .flat_map(|s| s.split('-').map(|v| v.parse().unwrap()))
+        .flat_map(|s| {
+            s.split('-').map(|v| match v.parse() {
+                Ok(t) => t,
+                Err(e) => panic!("Error parsing input: {e:?}"),
+            })
+        })
         .collect()
 }
 
