@@ -32,7 +32,7 @@ fn exit_with_status(status: i32, path: &PathBuf) -> ! {
     process::exit(status);
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
     // acquire a temp file path to write aoc-cli output to.
     // aoc-cli expects this file not to be present - delete just in case.
     let mut tmp_file_path = temp_dir();
@@ -75,12 +75,8 @@ fn main() {
 
     match Command::new("aoc").args(cmd_args).output() {
         Ok(cmd_output) => {
-            io::stdout()
-                .write_all(&cmd_output.stdout)
-                .expect("could not write cmd stdout to pipe.");
-            io::stderr()
-                .write_all(&cmd_output.stderr)
-                .expect("could not write cmd stderr to pipe.");
+            io::stdout().write_all(&cmd_output.stdout)?;
+            io::stderr().write_all(&cmd_output.stderr)?;
             if !cmd_output.status.success() {
                 exit_with_status(1, &tmp_file_path);
             }

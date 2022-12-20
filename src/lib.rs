@@ -50,8 +50,12 @@ pub fn read_file(folder: &str, day: u8) -> String {
 
     let filepath = cwd.join("src").join(folder).join(format!("{day:02}.txt"));
 
-    let f = fs::read_to_string(filepath);
-    f.expect("could not open input file")
+    let f = match fs::read_to_string(filepath) {
+        Ok(file) => file,
+        Err(error) => panic!("Problem opening the file: {:?}", error),
+    };
+
+    f
 }
 
 fn parse_time(val: &str, postfix: &str) -> f64 {
