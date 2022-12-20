@@ -1,9 +1,11 @@
 use itertools::Itertools;
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<u32> {
     input.split("\n\n").map(parse_group).max()
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<u32> {
     let top3 = input
         .split("\n\n")

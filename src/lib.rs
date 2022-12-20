@@ -41,27 +41,45 @@ macro_rules! solve {
     }};
 }
 
+/// # Panics
+///
+/// cwd may be invalid
+#[must_use]
 pub fn read_file(folder: &str, day: u8) -> String {
-    let cwd = env::current_dir().unwrap();
+    let cwd = match env::current_dir() {
+        Ok(cwd) => cwd,
+        Err(e) => panic!("Problem reading the current dir: {e:?}"),
+    };
 
-    let filepath = cwd.join("src").join(folder).join(format!("{:02}.txt", day));
+    let filepath = cwd.join("src").join(folder).join(format!("{day:02}.txt"));
 
-    let f = fs::read_to_string(filepath);
-    f.expect("could not open input file")
+    let f = match fs::read_to_string(filepath) {
+        Ok(file) => file,
+        Err(e) => panic!("Problem opening the file: {e:?}"),
+    };
+
+    f
 }
 
 fn parse_time(val: &str, postfix: &str) -> f64 {
-    val.split(postfix).next().unwrap().parse().unwrap()
+    let time_str = val.split(postfix).next().map_or("", |s| s);
+
+    match time_str.parse() {
+        Ok(t) => t,
+        Err(e) => panic!("Invalid time format: {e:?}"),
+    }
 }
 
+/// # Panics
+///
+/// Will panic if line is invalid format
+#[must_use]
 pub fn parse_exec_time(output: &str) -> f64 {
     output.lines().fold(0_f64, |acc, l| {
-        if !l.contains("elapsed:") {
-            acc
-        } else {
-            let timing = l.split("(elapsed: ").last().unwrap();
+        if l.contains("elapsed:") {
+            let timing = l.split("(elapsed: ").last().map_or("", |s| s);
             // use `contains` istd. of `ends_with`: string may contain ANSI escape sequences.
-            // for possible time formats, see: https://github.com/rust-lang/rust/blob/1.64.0/library/core/src/time.rs#L1176-L1200
+            // for possible time formats, see: <https://github.com/rust-lang/rust/blob/1.64.0/library/core/src/time.rs#L1176-L1200>
             if timing.contains("ns)") {
                 acc // range below rounding precision.
             } else if timing.contains("µs)") {
@@ -69,15 +87,17 @@ pub fn parse_exec_time(output: &str) -> f64 {
             } else if timing.contains("ms)") {
                 acc + parse_time(timing, "ms")
             } else if timing.contains("s)") {
-                acc + parse_time(timing, "s") * 1000_f64
+                parse_time(timing, "s").mul_add(1000_f64, acc)
             } else {
                 acc
             }
+        } else {
+            acc
         }
     })
 }
 
-/// copied from: https://github.com/rust-lang/rust/blob/1.64.0/library/std/src/macros.rs#L328-L333
+/// copied from: <https://github.com/rust-lang/rust/blob/1.64.0/library/std/src/macros.rs#L328-L333>
 #[cfg(test)]
 macro_rules! assert_approx_eq {
     ($a:expr, $b:expr) => {{

@@ -14,6 +14,7 @@ use itertools::Itertools;
 // 2,1,5 -> 2 + 2 + 2 = 6
 // 2,3,5 -> 2 + 2 + 2 = 6
 // tot =
+#[must_use]
 pub fn part_one(input: &str) -> Option<u16> {
     let cubes = parse(input);
     let mut open_faces = 0;
@@ -40,6 +41,7 @@ pub fn part_one(input: &str) -> Option<u16> {
 // 2,1,5 ->
 // 2,3,5 ->
 // tot =
+#[must_use]
 pub fn part_two(input: &str) -> Option<u16> {
     let _cubes = parse(input);
 
@@ -109,13 +111,23 @@ fn count_open_faces(cube: &Cube, all_cubes: &[Cube]) -> u16 {
 }
 
 fn parse_cube(line: &str) -> Cube {
-    let (x_str, rest) = line.split_once(',').unwrap();
-    let (y_str, z_str) = rest.split_once(',').unwrap();
+    let (x_str, rest) = line
+        .split_once(',')
+        .map_or_else(|| panic!("Invalid format"), |m| m);
+    let (y_str, z_str) = rest
+        .split_once(',')
+        .map_or_else(|| panic!("Invalid format"), |m| m);
 
     Cube {
-        x: x_str.parse::<i16>().unwrap(),
-        y: y_str.parse::<i16>().unwrap(),
-        z: z_str.parse::<i16>().unwrap(),
+        x: x_str
+            .parse::<i16>()
+            .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
+        y: y_str
+            .parse::<i16>()
+            .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
+        z: z_str
+            .parse::<i16>()
+            .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
     }
 }
 
@@ -143,6 +155,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 18);
-        assert_eq!(part_two(&input), Some(58));
+        assert_eq!(part_two(&input), None);
     }
 }

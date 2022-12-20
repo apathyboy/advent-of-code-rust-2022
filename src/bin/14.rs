@@ -1,6 +1,7 @@
 use itertools::Itertools;
 use std::cmp::{max, min};
 
+#[must_use]
 pub fn part_one(input: &str) -> Option<u32> {
     let mut map = parse(input);
     let max_y = find_max_y(&map);
@@ -9,7 +10,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     loop {
         let mut sand = (500, 0);
 
-        while let Some(next_move) = find_next_move(&map, &sand, max_y + 2) {
+        while let Some(next_move) = find_next_move(&map, sand, max_y + 2) {
             if next_move.1 == max_y {
                 return Some(sand_counter);
             }
@@ -22,6 +23,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     }
 }
 
+#[must_use]
 pub fn part_two(input: &str) -> Option<u32> {
     let mut map = parse(input);
     let floor_y = find_max_y(&map) + 2;
@@ -30,7 +32,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     loop {
         let mut sand = (500, 0);
 
-        while let Some(next_move) = find_next_move(&map, &sand, floor_y) {
+        while let Some(next_move) = find_next_move(&map, sand, floor_y) {
             sand = next_move;
         }
 
@@ -45,15 +47,15 @@ pub fn part_two(input: &str) -> Option<u32> {
 
 type Point = (i16, i16);
 
-fn find_next_move(map: &[Point], sand: &Point, floor: i16) -> Option<Point> {
+fn find_next_move(map: &[Point], sand: Point, floor: i16) -> Option<Point> {
     let (x_check, y_check) = sand;
 
     if y_check + 1 == floor {
         return None;
     }
 
-    if !map.contains(&(*x_check, y_check + 1)) {
-        Some((*x_check, y_check + 1))
+    if !map.contains(&(x_check, y_check + 1)) {
+        Some((x_check, y_check + 1))
     } else if !map.contains(&(x_check - 1, y_check + 1)) {
         Some((x_check - 1, y_check + 1))
     } else if !map.contains(&(x_check + 1, y_check + 1)) {
@@ -64,7 +66,10 @@ fn find_next_move(map: &[Point], sand: &Point, floor: i16) -> Option<Point> {
 }
 
 fn find_max_y(map: &[Point]) -> i16 {
-    map.iter().map(|p| p.1).max().unwrap()
+    map.iter()
+        .map(|p| p.1)
+        .max()
+        .map_or_else(|| panic!("Error finding max"), |m| m)
 }
 
 fn parse(input: &str) -> Vec<Point> {
@@ -74,8 +79,17 @@ fn parse(input: &str) -> Vec<Point> {
         let tmp = line
             .split(" -> ")
             .map(|p| {
-                let (x_str, y_str) = p.split_once(',').unwrap();
-                (x_str.parse::<i16>().unwrap(), y_str.parse::<i16>().unwrap())
+                let (x_str, y_str) = p
+                    .split_once(',')
+                    .map_or_else(|| panic!("Invalid format"), |m| m);
+                (
+                    x_str
+                        .parse::<i16>()
+                        .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
+                    y_str
+                        .parse::<i16>()
+                        .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
+                )
             })
             .collect_vec();
         for (p1, p2) in tmp.iter().tuple_windows() {

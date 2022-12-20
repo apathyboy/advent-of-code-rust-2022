@@ -8,18 +8,24 @@ use std::process::Command;
 fn main() {
     let total: f64 = (1..=25)
         .map(|day| {
-            let day = format!("{:02}", day);
+            let day = format!("{day:02}");
 
-            let cmd = Command::new("cargo")
+            let cmd = match Command::new("cargo")
                 .args(["run", "--release", "--bin", &day])
                 .output()
-                .unwrap();
+            {
+                Ok(tmp) => tmp,
+                Err(e) => panic!("Error parsing input string: {e:?}"),
+            };
 
             println!("----------");
-            println!("{}| Day {} |{}", ANSI_BOLD, day, ANSI_RESET);
+            println!("{ANSI_BOLD}| Day {day} |{ANSI_RESET}");
             println!("----------");
 
-            let output = String::from_utf8(cmd.stdout).unwrap();
+            let output = match String::from_utf8(cmd.stdout) {
+                Ok(t) => t,
+                Err(e) => panic!("Error parsing input string: {e:?}"),
+            };
             let is_empty = output.is_empty();
 
             println!(
@@ -39,8 +45,5 @@ fn main() {
         })
         .sum();
 
-    println!(
-        "{}Total:{} {}{:.2}ms{}",
-        ANSI_BOLD, ANSI_RESET, ANSI_ITALIC, total, ANSI_RESET
-    );
+    println!("{ANSI_BOLD}Total:{ANSI_RESET} {ANSI_ITALIC}{total:.2}ms{ANSI_RESET}");
 }

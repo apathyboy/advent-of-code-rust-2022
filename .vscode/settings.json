@@ -1,0 +1,10 @@
+{
+    "rust-analyzer.checkOnSave.command": "clippy",
+    "rust-analyzer.checkOnSave.extraArgs": [
+        "--",
+        "-W", "clippy::pedantic",
+        "-W", "clippy::nursery",
+        "-W", "clippy::unwrap_used",
+        "-W", "clippy::expect_used"
+    ]
+}

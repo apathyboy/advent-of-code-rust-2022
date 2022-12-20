@@ -32,7 +32,7 @@ fn exit_with_status(status: i32, path: &PathBuf) -> ! {
     process::exit(status);
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
     // acquire a temp file path to write aoc-cli output to.
     // aoc-cli expects this file not to be present - delete just in case.
     let mut tmp_file_path = temp_dir();
@@ -42,13 +42,13 @@ fn main() {
     let args = match parse_args() {
         Ok(args) => args,
         Err(e) => {
-            eprintln!("Failed to process arguments: {}", e);
+            eprintln!("Failed to process arguments: {e}");
             exit_with_status(1, &tmp_file_path);
         }
     };
 
     let day_padded = format!("{:02}", args.day);
-    let input_path = format!("src/inputs/{}.txt", day_padded);
+    let input_path = format!("src/inputs/{day_padded}.txt");
 
     // check if aoc binary exists and is callable.
     if Command::new("aoc").arg("-V").output().is_err() {
@@ -75,18 +75,14 @@ fn main() {
 
     match Command::new("aoc").args(cmd_args).output() {
         Ok(cmd_output) => {
-            io::stdout()
-                .write_all(&cmd_output.stdout)
-                .expect("could not write cmd stdout to pipe.");
-            io::stderr()
-                .write_all(&cmd_output.stderr)
-                .expect("could not write cmd stderr to pipe.");
+            io::stdout().write_all(&cmd_output.stdout)?;
+            io::stderr().write_all(&cmd_output.stderr)?;
             if !cmd_output.status.success() {
                 exit_with_status(1, &tmp_file_path);
             }
         }
         Err(e) => {
-            eprintln!("failed to spawn aoc-cli: {}", e);
+            eprintln!("failed to spawn aoc-cli: {e}");
             exit_with_status(1, &tmp_file_path);
         }
     }
@@ -98,7 +94,7 @@ fn main() {
             exit_with_status(0, &tmp_file_path);
         }
         Err(e) => {
-            eprintln!("could not copy downloaded input to input file: {}", e);
+            eprintln!("could not copy downloaded input to input file: {e}");
             exit_with_status(1, &tmp_file_path);
         }
     }

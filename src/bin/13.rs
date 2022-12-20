@@ -4,24 +4,28 @@ use nom::{
     multi::separated_list0, sequence::delimited, IResult,
 };
 
-pub fn part_one(input: &str) -> Option<u32> {
+#[must_use]
+pub fn part_one(input: &str) -> Option<usize> {
     let sum_of_indices = parse(input)
         .iter()
         .tuples()
         .enumerate()
-        .filter_map(|(idx, (left, right))| {
-            if left < right {
-                Some(idx as u32 + 1)
-            } else {
-                None
-            }
-        })
+        .filter_map(
+            |(idx, (left, right))| {
+                if left < right {
+                    Some(idx + 1)
+                } else {
+                    None
+                }
+            },
+        )
         .sum();
 
     Some(sum_of_indices)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+#[must_use]
+pub fn part_two(input: &str) -> Option<usize> {
     let mut packets = parse(input);
 
     let div1 = Packet::List(vec![Packet::List(vec![Packet::Int(2)])]);
@@ -35,7 +39,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         .enumerate()
         .filter_map(|(idx, p)| {
             if *p == div1 || *p == div2 {
-                Some(idx as u32 + 1)
+                Some(idx + 1)
             } else {
                 None
             }
@@ -46,7 +50,7 @@ pub fn part_two(input: &str) -> Option<u32> {
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum Packet {
     Int(i64),
-    List(Vec<Packet>),
+    List(Vec<Self>),
 }
 
 impl PartialOrd for Packet {
@@ -58,10 +62,10 @@ impl PartialOrd for Packet {
 impl Ord for Packet {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (self, other) {
-            (Packet::Int(a), Packet::Int(b)) => a.cmp(b),
-            (Packet::Int(a), Packet::List(b)) => vec![Packet::Int(*a)].cmp(b),
-            (Packet::List(a), Packet::Int(b)) => a.cmp(&vec![Packet::Int(*b)]),
-            (Packet::List(a), Packet::List(b)) => a.cmp(b),
+            (Self::Int(a), Self::Int(b)) => a.cmp(b),
+            (Self::Int(a), Self::List(b)) => vec![Self::Int(*a)].cmp(b),
+            (Self::List(a), Self::Int(b)) => a.cmp(&vec![Self::Int(*b)]),
+            (Self::List(a), Self::List(b)) => a.cmp(b),
         }
     }
 }
@@ -80,7 +84,11 @@ fn parse(input: &str) -> Vec<Packet> {
     input
         .lines()
         .filter(|l| !l.is_empty())
-        .map(|l| parse_packet(l).unwrap().1)
+        .map(|l| {
+            parse_packet(l)
+                .map_or_else(|e| panic!("Invalid format: {e:?}"), |p| p)
+                .1
+        })
         .collect()
 }
 

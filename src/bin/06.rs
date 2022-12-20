@@ -1,6 +1,7 @@
 use itertools::Itertools;
 
-pub fn part_one(input: &str) -> Option<u32> {
+#[must_use]
+pub fn part_one(input: &str) -> Option<usize> {
     let mut pos: usize = 4;
     while pos < input.chars().count() {
         let window = input.chars().skip(pos - 4).take(4).collect_vec();
@@ -11,10 +12,11 @@ pub fn part_one(input: &str) -> Option<u32> {
         pos += 1;
     }
 
-    Some(pos as u32)
+    Some(pos)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+#[must_use]
+pub fn part_two(input: &str) -> Option<usize> {
     let mut pos: usize = 14;
     while pos < input.chars().count() {
         let window = input.chars().skip(pos - 14).take(14).collect_vec();
@@ -25,7 +27,7 @@ pub fn part_two(input: &str) -> Option<u32> {
         pos += 1;
     }
 
-    Some(pos as u32)
+    Some(pos)
 }
 
 fn main() {
