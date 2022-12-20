@@ -17,7 +17,7 @@ pub fn part_one(input: &str) -> Option<u64> {
 pub fn part_two(input: &str) -> Option<u64> {
     let dir_sizes = read_directory_sizes(input);
 
-    let cur_usage = *dir_sizes.iter().max().unwrap();
+    let cur_usage = dir_sizes.iter().max().map_or(0, |m| *m);
     let required_space = cur_usage - 40_000_000;
 
     dir_sizes
@@ -42,12 +42,8 @@ fn read_directory_sizes(input: &str) -> Vec<u64> {
         }
 
         let mut lines = chunk.lines();
-        let command = lines
-            .next()
-            .unwrap()
-            .trim()
-            .split(' ')
-            .collect::<Vec<&str>>();
+        let next_line = lines.next().map_or_else(|| panic!("Invalid input"), |t| t);
+        let command = next_line.trim().split(' ').collect::<Vec<&str>>();
 
         if command[0] == "cd" {
             if command[1] == ".." {
@@ -58,10 +54,13 @@ fn read_directory_sizes(input: &str) -> Vec<u64> {
             }
         } else if command[0] == "ls" {
             let dir_size = lines
-                .map(|s| s.split(' ').next().unwrap())
+                .filter_map(|s| s.split(' ').next())
                 .filter_map(|s| {
-                    if s.chars().next().unwrap().is_numeric() {
-                        Some(s.parse::<u64>().unwrap())
+                    if s.as_bytes()[0].is_ascii_digit() {
+                        match s.parse::<u64>() {
+                            Ok(t) => Some(t),
+                            Err(e) => panic!("Invalid input: {e:?}"),
+                        }
                     } else {
                         None
                     }
@@ -72,7 +71,10 @@ fn read_directory_sizes(input: &str) -> Vec<u64> {
 
             for d in current_path.clone() {
                 dir.push_str(d);
-                *dir_structure.get_mut(dir.as_str()).unwrap() += dir_size;
+                let tmp = dir_structure
+                    .get_mut(dir.as_str())
+                    .map_or_else(|| panic!("Invalid key"), |t| t);
+                *tmp += dir_size;
                 dir.push('/');
             }
         }
@@ -100,6 +102,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 7);
-        assert_eq!(part_two(&input), Some(24933642));
+        assert_eq!(part_two(&input), Some(24_933_642));
     }
 }

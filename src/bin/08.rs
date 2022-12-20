@@ -43,7 +43,14 @@ fn scenic_score(map: &[Vec<u32>], x: usize, x_max: usize, y: usize, y_max: usize
 fn parse_map(input: &str) -> (Vec<Vec<u32>>, usize, usize) {
     let map = input
         .lines()
-        .map(|s| s.chars().map(|c| c.to_digit(10).unwrap()).collect_vec())
+        .map(|s| {
+            s.chars()
+                .map(|c| {
+                    c.to_digit(10)
+                        .map_or_else(|| panic!("Invalid input"), |t| t)
+                })
+                .collect_vec()
+        })
         .collect_vec();
 
     let x_max = map[0].len();

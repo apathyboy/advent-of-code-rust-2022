@@ -103,20 +103,38 @@ fn parse(input: &str) -> Vec<(Point, Point, u32)> {
     let re = Regex::new(
         r"Sensor at x=([-]?\d+), y=([-]?\d+): closest beacon is at x=([-]?\d+), y=([-]?\d+)",
     )
-    .unwrap();
+    .map_or_else(|e| panic!("Invalid format: {e:?}"), |r| r);
 
     input
         .lines()
         .map(|l| -> (Point, Point, u32) {
-            let cap = re.captures(l).unwrap();
+            let cap = re
+                .captures(l)
+                .map_or_else(|| panic!("Invalid format"), |s| s);
 
             let sensor = (
-                cap.get(1).unwrap().as_str().parse::<i32>().unwrap(),
-                cap.get(2).unwrap().as_str().parse::<i32>().unwrap(),
+                cap.get(1)
+                    .map_or_else(|| panic!("Invalid format"), |s| s)
+                    .as_str()
+                    .parse::<i32>()
+                    .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
+                cap.get(2)
+                    .map_or_else(|| panic!("Invalid format"), |s| s)
+                    .as_str()
+                    .parse::<i32>()
+                    .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
             );
             let beacon = (
-                cap.get(3).unwrap().as_str().parse::<i32>().unwrap(),
-                cap.get(4).unwrap().as_str().parse::<i32>().unwrap(),
+                cap.get(3)
+                    .map_or_else(|| panic!("Invalid format"), |s| s)
+                    .as_str()
+                    .parse::<i32>()
+                    .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
+                cap.get(4)
+                    .map_or_else(|| panic!("Invalid format"), |s| s)
+                    .as_str()
+                    .parse::<i32>()
+                    .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
             );
 
             (sensor, beacon, manhattan(sensor, beacon))
@@ -147,6 +165,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 15);
-        assert_eq!(part_two(&input), Some(56000011));
+        assert_eq!(part_two(&input), Some(56_000_011));
     }
 }

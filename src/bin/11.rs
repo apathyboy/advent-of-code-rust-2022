@@ -33,7 +33,7 @@ pub fn part_one(input: &str) -> Option<usize> {
         .sorted_by(|a, b| Ord::cmp(&b, &a))
         .take(2)
         .reduce(|accum, item| accum * item)
-        .unwrap();
+        .map_or_else(|| panic!("Problem reducing vector"), |i| i);
 
     Some(monkey_business_level)
 }
@@ -49,7 +49,7 @@ pub fn part_two(input: &str) -> Option<usize> {
         .iter()
         .map(|m| m.test_val)
         .reduce(|accum, item| accum * item)
-        .unwrap();
+        .map_or_else(|| panic!("Problem reducing vector"), |i| i);
 
     for _ in 0..10000 {
         for i in 0..monkeys.len() {
@@ -80,7 +80,7 @@ pub fn part_two(input: &str) -> Option<usize> {
         .sorted_by(|a, b| Ord::cmp(&b, &a))
         .take(2)
         .reduce(|accum, item| accum * item)
-        .unwrap();
+        .map_or_else(|| panic!("Problem reducing vector"), |i| i);
 
     Some(monkey_business_level)
 }
@@ -95,17 +95,25 @@ struct Monkey {
 }
 
 fn perform_operation(operation: &str, old_val: u64) -> u64 {
-    let (first, rest) = operation.split_once(' ').unwrap();
-    let (op, second) = rest.split_once(' ').unwrap();
+    let (first, rest) = operation
+        .split_once(' ')
+        .map_or_else(|| panic!("Invalid format"), |i| i);
+    let (op, second) = rest
+        .split_once(' ')
+        .map_or_else(|| panic!("Invalid format"), |i| i);
 
     let left_val = match first {
         "old" => old_val,
-        _ => first.parse::<u64>().unwrap(),
+        _ => first
+            .parse::<u64>()
+            .map_or_else(|e| panic!("Invalid format: {e:?}"), |i| i),
     };
 
     let right_val = match second {
         "old" => old_val,
-        _ => second.parse::<u64>().unwrap(),
+        _ => second
+            .parse::<u64>()
+            .map_or_else(|e| panic!("Invalid format: {e:?}"), |i| i),
     };
 
     if op == "+" {
@@ -123,12 +131,21 @@ fn parse(input: &str) -> Vec<Monkey> {
 
             let items = lines[1][18..]
                 .split(", ")
-                .map(|s| s.parse::<u64>().unwrap())
+                .map(|s| {
+                    s.parse::<u64>()
+                        .map_or_else(|e| panic!("Invalid format: {e:?}"), |i| i)
+                })
                 .sorted()
                 .collect_vec();
-            let true_target = lines[4][29..].parse::<usize>().unwrap();
-            let false_target = lines[5][30..].parse::<usize>().unwrap();
-            let test_val = lines[3][21..].parse::<u64>().unwrap();
+            let true_target = lines[4][29..]
+                .parse::<usize>()
+                .map_or_else(|e| panic!("Invalid format: {e:?}"), |i| i);
+            let false_target = lines[5][30..]
+                .parse::<usize>()
+                .map_or_else(|e| panic!("Invalid format: {e:?}"), |i| i);
+            let test_val = lines[3][21..]
+                .parse::<u64>()
+                .map_or_else(|e| panic!("Invalid format: {e:?}"), |i| i);
             let operation = lines[2][19..].to_string();
 
             Monkey {
@@ -162,6 +179,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 11);
-        assert_eq!(part_two(&input), Some(2713310158));
+        assert_eq!(part_two(&input), Some(2_713_310_158));
     }
 }

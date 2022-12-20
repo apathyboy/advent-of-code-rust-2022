@@ -34,7 +34,9 @@ fn move_instruction(knots: &mut Vec<(i32, i32)>, motion: (i32, i32), amt: i32) -
                 }
             }
 
-            *knots.last().unwrap()
+            *knots
+                .last()
+                .map_or_else(|| panic!("empty knot list"), |k| k)
         })
         .collect()
 }
@@ -51,18 +53,27 @@ fn move_toward(knot: &mut (i32, i32), dir: (i32, i32)) {
 fn parse_input(input: &str) -> Vec<((i32, i32), i32)> {
     input
         .lines()
-        .map(|line| line.split_once(' ').unwrap())
-        .map(|(dir, amt)| (parse_dir(dir).unwrap(), amt.parse::<i32>().unwrap()))
+        .map(|line| {
+            line.split_once(' ')
+                .map_or_else(|| panic!("Invalid format"), |s| s)
+        })
+        .map(|(dir, amt)| {
+            (
+                parse_dir(dir),
+                amt.parse::<i32>()
+                    .map_or_else(|e| panic!("Invalid format: {e:?}"), |i| i),
+            )
+        })
         .collect_vec()
 }
 
-fn parse_dir(dir: &str) -> Option<(i32, i32)> {
+fn parse_dir(dir: &str) -> (i32, i32) {
     match dir {
-        "U" => Some((0, 1)),
-        "D" => Some((0, -1)),
-        "L" => Some((-1, 0)),
-        "R" => Some((1, 0)),
-        _ => None,
+        "U" => (0, 1),
+        "D" => (0, -1),
+        "L" => (-1, 0),
+        "R" => (1, 0),
+        _ => panic!("Invalid format"),
     }
 }
 

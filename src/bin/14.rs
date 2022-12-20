@@ -66,7 +66,10 @@ fn find_next_move(map: &[Point], sand: Point, floor: i16) -> Option<Point> {
 }
 
 fn find_max_y(map: &[Point]) -> i16 {
-    map.iter().map(|p| p.1).max().unwrap()
+    map.iter()
+        .map(|p| p.1)
+        .max()
+        .map_or_else(|| panic!("Error finding max"), |m| m)
 }
 
 fn parse(input: &str) -> Vec<Point> {
@@ -76,8 +79,17 @@ fn parse(input: &str) -> Vec<Point> {
         let tmp = line
             .split(" -> ")
             .map(|p| {
-                let (x_str, y_str) = p.split_once(',').unwrap();
-                (x_str.parse::<i16>().unwrap(), y_str.parse::<i16>().unwrap())
+                let (x_str, y_str) = p
+                    .split_once(',')
+                    .map_or_else(|| panic!("Invalid format"), |m| m);
+                (
+                    x_str
+                        .parse::<i16>()
+                        .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
+                    y_str
+                        .parse::<i16>()
+                        .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
+                )
             })
             .collect_vec();
         for (p1, p2) in tmp.iter().tuple_windows() {

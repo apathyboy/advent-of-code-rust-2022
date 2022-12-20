@@ -39,18 +39,33 @@ fn explore(
     let mut visit: VecDeque<Point> = VecDeque::from([start]);
 
     while !visit.is_empty() {
-        let cur = visit.pop_front().unwrap();
-        let cur_val = *map.get(&cur).unwrap() as i16;
+        let cur = visit
+            .pop_front()
+            .map_or_else(|| panic!("Unable to pop from empty queue"), |i| i);
+        let cur_val = *map
+            .get(&cur)
+            .map_or_else(|| panic!("invalid map key"), |i| i) as i16;
 
         for step in [(0, 1), (0, -1), (1, 0), (-1, 0)] {
             let next = (cur.0 + step.0, cur.1 + step.1);
 
             if map.contains_key(&next)
                 && !visited.contains_key(&next)
-                && (*map.get(&next).unwrap() as i16 - cur_val) * (direction as i16) <= 1
+                && (*map
+                    .get(&next)
+                    .map_or_else(|| panic!("invalid map key"), |i| i) as i16
+                    - cur_val)
+                    * (direction as i16)
+                    <= 1
             {
                 visit.push_back(next);
-                visited.insert(next, visited.get(&cur).unwrap() + 1);
+                visited.insert(
+                    next,
+                    visited
+                        .get(&cur)
+                        .map_or_else(|| panic!("invalid map key"), |i| i)
+                        + 1,
+                );
             }
         }
     }
@@ -68,22 +83,22 @@ fn parse_input(input: &str) -> (HashMap<Point, char>, Point, Point) {
             let mut height = c;
             if c.eq(&'S') {
                 start = (
-                    i16::try_from(x).ok().unwrap(),
-                    i16::try_from(y).ok().unwrap(),
+                    i16::try_from(x).map_or_else(|e| panic!("invalid conversion: {e:?}"), |i| i),
+                    i16::try_from(y).map_or_else(|e| panic!("invalid conversion: {e:?}"), |i| i),
                 );
                 height = 'a';
             } else if c.eq(&'E') {
                 end = (
-                    i16::try_from(x).ok().unwrap(),
-                    i16::try_from(y).ok().unwrap(),
+                    i16::try_from(x).map_or_else(|e| panic!("invalid conversion: {e:?}"), |i| i),
+                    i16::try_from(y).map_or_else(|e| panic!("invalid conversion: {e:?}"), |i| i),
                 );
                 height = 'z';
             }
 
             map.insert(
                 (
-                    i16::try_from(x).ok().unwrap(),
-                    i16::try_from(y).ok().unwrap(),
+                    i16::try_from(x).map_or_else(|e| panic!("invalid conversion: {e:?}"), |i| i),
+                    i16::try_from(y).map_or_else(|e| panic!("invalid conversion: {e:?}"), |i| i),
                 ),
                 height,
             );

@@ -50,7 +50,7 @@ pub fn part_two(input: &str) -> Option<usize> {
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum Packet {
     Int(i64),
-    List(Vec<Packet>),
+    List(Vec<Self>),
 }
 
 impl PartialOrd for Packet {
@@ -84,7 +84,11 @@ fn parse(input: &str) -> Vec<Packet> {
     input
         .lines()
         .filter(|l| !l.is_empty())
-        .map(|l| parse_packet(l).unwrap().1)
+        .map(|l| {
+            parse_packet(l)
+                .map_or_else(|e| panic!("Invalid format: {e:?}"), |p| p)
+                .1
+        })
         .collect()
 }
 

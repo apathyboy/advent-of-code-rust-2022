@@ -111,13 +111,23 @@ fn count_open_faces(cube: &Cube, all_cubes: &[Cube]) -> u16 {
 }
 
 fn parse_cube(line: &str) -> Cube {
-    let (x_str, rest) = line.split_once(',').unwrap();
-    let (y_str, z_str) = rest.split_once(',').unwrap();
+    let (x_str, rest) = line
+        .split_once(',')
+        .map_or_else(|| panic!("Invalid format"), |m| m);
+    let (y_str, z_str) = rest
+        .split_once(',')
+        .map_or_else(|| panic!("Invalid format"), |m| m);
 
     Cube {
-        x: x_str.parse::<i16>().unwrap(),
-        y: y_str.parse::<i16>().unwrap(),
-        z: z_str.parse::<i16>().unwrap(),
+        x: x_str
+            .parse::<i16>()
+            .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
+        y: y_str
+            .parse::<i16>()
+            .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
+        z: z_str
+            .parse::<i16>()
+            .map_or_else(|e| panic!("Invalid format: {e:?}"), |m| m),
     }
 }
 

@@ -70,10 +70,9 @@ fn parse_stacks(input: &str) -> Vec<Vec<char>> {
     for line in input.rsplit('\n').skip(1) {
         for (i, v) in line.chars().skip(1).step_by(4).enumerate() {
             if v != ' ' {
-                let stack = match stacks.get_mut(i) {
-                    Some(t) => t,
-                    None => panic!("Attempt to access invalid stack: {i}"),
-                };
+                let stack = stacks
+                    .get_mut(i)
+                    .map_or_else(|| panic!("Invalid stack id {i}"), |t| t);
                 stack.push(v);
             }
         }
@@ -83,7 +82,11 @@ fn parse_stacks(input: &str) -> Vec<Vec<char>> {
 }
 
 fn parse_input(input: &str) -> (Vec<Vec<char>>, Vec<Move>) {
-    let (stacks, moves) = input.split_at(input.find("\n\n").unwrap());
+    let split_point = input
+        .find("\n\n")
+        .map_or_else(|| panic!("Invalid input"), |t| t);
+
+    let (stacks, moves) = input.split_at(split_point);
 
     (parse_stacks(stacks), parse_moves(moves))
 }

@@ -17,7 +17,9 @@ pub fn part_one(input: &str) -> Option<i32> {
             cycle += 1;
             cycles.push(cycle * x_register);
 
-            x_register += &line[5..].parse::<i32>().unwrap();
+            x_register += &line[5..]
+                .parse::<i32>()
+                .map_or_else(|e| panic!("Invalid format: {e:?}"), |i| i);
         }
     }
 
@@ -41,7 +43,9 @@ pub fn part_two(input: &str) -> Option<String> {
             cycle += 1;
             output.push(crt_value(cycle, x_register));
 
-            x_register += &line[5..].parse::<i32>().unwrap();
+            x_register += &line[5..]
+                .parse::<i32>()
+                .map_or_else(|e| panic!("Invalid format: {e:?}"), |i| i);
         }
     }
 
