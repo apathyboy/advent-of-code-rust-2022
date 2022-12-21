@@ -9,12 +9,12 @@ use std::{
 };
 
 const MODULE_TEMPLATE: &str = r###"#[must_use]
-pub fn part_one(_input: &str) -> Option<u32> {
+pub const fn part_one(_input: &str) -> Option<u32> {
     None
 }
 
 #[must_use]
-pub fn part_two(_input: &str) -> Option<u32> {
+pub const fn part_two(_input: &str) -> Option<u32> {
     None
 }
 
