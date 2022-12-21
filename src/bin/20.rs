@@ -1,5 +1,6 @@
 use itertools::Itertools;
 use std::convert::TryFrom;
+
 /// # Panics
 ///
 /// Will panic on invalid input
