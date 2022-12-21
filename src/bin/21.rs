@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use std::cmp::Ordering;
 
 /// # Panics
 ///
@@ -14,21 +15,57 @@ pub fn part_one(input: &str) -> Option<i64> {
             } else if monkeys[i].op == "VAL" {
                 for j in 0..monkeys.len() {
                     if monkeys[j].left == monkeys[i].id && monkeys[j].left_val.is_none() {
-                        monkeys[j].left_val = Some(monkeys[i].val.unwrap());
+                        monkeys[j].left_val = Some(
+                            monkeys[i]
+                                .val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                        );
                     }
                     if monkeys[j].right == monkeys[i].id && monkeys[j].right_val.is_none() {
-                        monkeys[j].right_val = Some(monkeys[i].val.unwrap());
+                        monkeys[j].right_val = Some(
+                            monkeys[i]
+                                .val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                        );
                     }
                 }
             } else if monkeys[i].left_val.is_some() && monkeys[i].right_val.is_some() {
                 monkeys[i].val = if monkeys[i].op == "*" {
-                    Some(monkeys[i].left_val.unwrap() * monkeys[i].right_val.unwrap())
+                    Some(
+                        monkeys[i]
+                            .left_val
+                            .map_or_else(|| panic!("Expected value"), |v| v)
+                            * monkeys[i]
+                                .right_val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                    )
                 } else if monkeys[i].op == "/" {
-                    Some(monkeys[i].left_val.unwrap() / monkeys[i].right_val.unwrap())
+                    Some(
+                        monkeys[i]
+                            .left_val
+                            .map_or_else(|| panic!("Expected value"), |v| v)
+                            / monkeys[i]
+                                .right_val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                    )
                 } else if monkeys[i].op == "+" {
-                    Some(monkeys[i].left_val.unwrap() + monkeys[i].right_val.unwrap())
+                    Some(
+                        monkeys[i]
+                            .left_val
+                            .map_or_else(|| panic!("Expected value"), |v| v)
+                            + monkeys[i]
+                                .right_val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                    )
                 } else if monkeys[i].op == "-" {
-                    Some(monkeys[i].left_val.unwrap() - monkeys[i].right_val.unwrap())
+                    Some(
+                        monkeys[i]
+                            .left_val
+                            .map_or_else(|| panic!("Expected value"), |v| v)
+                            - monkeys[i]
+                                .right_val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                    )
                 } else {
                     None
                 };
@@ -48,15 +85,15 @@ pub fn part_two(input: &str) -> Option<i64> {
     let mut humn_idx = 0;
     let mut lo_val = 0;
 
-    for i in 0..monkeys.len() {
-        if monkeys[i].id == "root" {
-            monkeys[i].op = "=".to_string();
-        } else if monkeys[i].id == "humn" {
+    for (i, monkey) in monkeys.iter_mut().enumerate() {
+        if monkey.id == "root" {
+            monkey.op = "=".to_string();
+        } else if monkey.id == "humn" {
             humn_idx = i;
         }
     }
 
-    let mut high_val = 15625000000000;
+    let mut high_val = 10_000_000_000_000;
 
     monkeys[humn_idx].val = Some(lo_val);
     let (t1, _) = run_test(monkeys.clone());
@@ -74,13 +111,19 @@ pub fn part_two(input: &str) -> Option<i64> {
             (left_val, right_val) = (right_val, left_val);
         }
 
-        if left_val > right_val {
-            lo_val = mid + 1;
-        } else if left_val < right_val {
-            high_val = mid - 1;
-        } else {
-            high_val = mid;
+        match left_val.cmp(&right_val) {
+            Ordering::Greater => lo_val = mid + 1,
+            Ordering::Less => high_val = mid - 1,
+            Ordering::Equal => high_val = mid,
         }
+
+        //if left_val > right_val {
+        //    lo_val = mid + 1;
+        //} else if left_val < right_val {
+        //    high_val = mid - 1;
+        //} else {
+        //    high_val = mid;
+        //}
 
         //if left_val < 0 || left_val > right_val {
         //    humn_val /= 2;
@@ -110,25 +153,68 @@ fn run_test(mut monkeys: Vec<Monkey>) -> (i64, i64) {
                 && monkeys[i].left_val.is_some()
                 && monkeys[i].right_val.is_some()
             {
-                return (monkeys[i].left_val.unwrap(), monkeys[i].right_val.unwrap());
+                return (
+                    monkeys[i]
+                        .left_val
+                        .map_or_else(|| panic!("Expected value"), |v| v),
+                    monkeys[i]
+                        .right_val
+                        .map_or_else(|| panic!("Expected value"), |v| v),
+                );
             } else if monkeys[i].op == "VAL" {
                 for j in 0..monkeys.len() {
                     if monkeys[j].left == monkeys[i].id && monkeys[j].left_val.is_none() {
-                        monkeys[j].left_val = Some(monkeys[i].val.unwrap());
+                        monkeys[j].left_val = Some(
+                            monkeys[i]
+                                .val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                        );
                     }
                     if monkeys[j].right == monkeys[i].id && monkeys[j].right_val.is_none() {
-                        monkeys[j].right_val = Some(monkeys[i].val.unwrap());
+                        monkeys[j].right_val = Some(
+                            monkeys[i]
+                                .val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                        );
                     }
                 }
             } else if monkeys[i].left_val.is_some() && monkeys[i].right_val.is_some() {
                 monkeys[i].val = if monkeys[i].op == "*" {
-                    Some(monkeys[i].left_val.unwrap() * monkeys[i].right_val.unwrap())
+                    Some(
+                        monkeys[i]
+                            .left_val
+                            .map_or_else(|| panic!("Expected value"), |v| v)
+                            * monkeys[i]
+                                .right_val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                    )
                 } else if monkeys[i].op == "/" {
-                    Some(monkeys[i].left_val.unwrap() / monkeys[i].right_val.unwrap())
+                    Some(
+                        monkeys[i]
+                            .left_val
+                            .map_or_else(|| panic!("Expected value"), |v| v)
+                            / monkeys[i]
+                                .right_val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                    )
                 } else if monkeys[i].op == "+" {
-                    Some(monkeys[i].left_val.unwrap() + monkeys[i].right_val.unwrap())
+                    Some(
+                        monkeys[i]
+                            .left_val
+                            .map_or_else(|| panic!("Expected value"), |v| v)
+                            + monkeys[i]
+                                .right_val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                    )
                 } else if monkeys[i].op == "-" {
-                    Some(monkeys[i].left_val.unwrap() - monkeys[i].right_val.unwrap())
+                    Some(
+                        monkeys[i]
+                            .left_val
+                            .map_or_else(|| panic!("Expected value"), |v| v)
+                            - monkeys[i]
+                                .right_val
+                                .map_or_else(|| panic!("Expected value"), |v| v),
+                    )
                 } else {
                     None
                 };
