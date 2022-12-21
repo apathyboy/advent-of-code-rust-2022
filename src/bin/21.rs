@@ -46,7 +46,7 @@ pub fn part_two(input: &str) -> Option<i64> {
     let mut monkeys = input.lines().map(parse_monkey).collect_vec();
 
     let mut humn_idx = 0;
-    let mut humn_val = 1;
+    let mut lo_val = 0;
 
     for i in 0..monkeys.len() {
         if monkeys[i].id == "root" {
@@ -56,15 +56,40 @@ pub fn part_two(input: &str) -> Option<i64> {
         }
     }
 
-    loop {
-        monkeys[humn_idx].val = Some(humn_val);
+    let mut high_val = 15625000000000;
 
-        if run_test(monkeys.clone()) {
-            return Some(humn_val);
+    monkeys[humn_idx].val = Some(lo_val);
+    let (t1, _) = run_test(monkeys.clone());
+    monkeys[humn_idx].val = Some(high_val);
+    let (t2, _) = run_test(monkeys.clone());
+
+    while lo_val != high_val {
+        let mid = (lo_val + high_val) / 2;
+
+        monkeys[humn_idx].val = Some(mid);
+
+        let (mut left_val, mut right_val) = run_test(monkeys.clone());
+
+        if t1 < t2 {
+            (left_val, right_val) = (right_val, left_val);
         }
 
-        humn_val += 1;
+        if left_val > right_val {
+            lo_val = mid + 1;
+        } else if left_val < right_val {
+            high_val = mid - 1;
+        } else {
+            high_val = mid;
+        }
+
+        //if left_val < 0 || left_val > right_val {
+        //    humn_val /= 2;
+        //} else {
+        //    humn_val += 1;
+        //}
     }
+
+    Some(lo_val)
 }
 
 #[derive(Clone)]
@@ -78,14 +103,14 @@ struct Monkey {
     val: Option<i64>,
 }
 
-fn run_test(mut monkeys: Vec<Monkey>) -> bool {
+fn run_test(mut monkeys: Vec<Monkey>) -> (i64, i64) {
     loop {
         for i in 0..monkeys.len() {
             if monkeys[i].id == "root"
                 && monkeys[i].left_val.is_some()
                 && monkeys[i].right_val.is_some()
             {
-                return monkeys[i].left_val.unwrap() == monkeys[i].right_val.unwrap();
+                return (monkeys[i].left_val.unwrap(), monkeys[i].right_val.unwrap());
             } else if monkeys[i].op == "VAL" {
                 for j in 0..monkeys.len() {
                     if monkeys[j].left == monkeys[i].id && monkeys[j].left_val.is_none() {
