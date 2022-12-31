@@ -86,36 +86,22 @@ fn get_bounds(droplet: &[Cube]) -> (Cube, Cube) {
     };
 
     for c in droplet {
-        if c.x < min.x {
-            min.x = c.x;
-        }
-        if c.y < min.y {
-            min.y = c.y;
-        }
-        if c.z < min.z {
-            min.z = c.z;
-        }
+        min.x = min.x.min(c.x);
+        min.y = min.y.min(c.y);
+        min.z = min.z.min(c.z);
 
-        if c.x > max.x {
-            max.x = c.x;
-        }
-
-        if c.y > max.y {
-            max.y = c.y;
-        }
-
-        if c.z > max.z {
-            max.z = c.z;
-        }
+        max.x = max.x.max(c.x);
+        max.y = max.y.max(c.y);
+        max.z = max.z.max(c.z);
     }
 
-    min.x -= 2;
-    min.y -= 2;
-    min.z -= 2;
+    min.x -= 1;
+    min.y -= 1;
+    min.z -= 1;
 
-    max.x += 2;
-    max.y += 2;
-    max.z += 2;
+    max.x += 1;
+    max.y += 1;
+    max.z += 1;
 
     (min, max)
 }
@@ -125,38 +111,38 @@ fn is_adjacent(a: Cube, b: Cube) -> bool {
 }
 
 fn adjacent_positions(cube: Cube) -> Vec<Cube> {
-    let front = Cube {
-        x: cube.x,
-        y: cube.y,
-        z: cube.z - 1,
-    };
-    let back = Cube {
-        x: cube.x,
-        y: cube.y,
-        z: cube.z + 1,
-    };
-    let bottom = Cube {
-        x: cube.x,
-        y: cube.y - 1,
-        z: cube.z,
-    };
-    let top = Cube {
-        x: cube.x,
-        y: cube.y + 1,
-        z: cube.z,
-    };
-    let left = Cube {
-        x: cube.x - 1,
-        y: cube.y,
-        z: cube.z,
-    };
-    let right = Cube {
-        x: cube.x + 1,
-        y: cube.y,
-        z: cube.z,
-    };
-
-    vec![front, back, top, bottom, left, right]
+    vec![
+        Cube {
+            x: cube.x,
+            y: cube.y,
+            z: cube.z - 1,
+        },
+        Cube {
+            x: cube.x,
+            y: cube.y,
+            z: cube.z + 1,
+        },
+        Cube {
+            x: cube.x,
+            y: cube.y - 1,
+            z: cube.z,
+        },
+        Cube {
+            x: cube.x,
+            y: cube.y + 1,
+            z: cube.z,
+        },
+        Cube {
+            x: cube.x - 1,
+            y: cube.y,
+            z: cube.z,
+        },
+        Cube {
+            x: cube.x + 1,
+            y: cube.y,
+            z: cube.z,
+        },
+    ]
 }
 
 fn count_open_faces(cube: Cube, all_cubes: &[Cube]) -> u16 {
