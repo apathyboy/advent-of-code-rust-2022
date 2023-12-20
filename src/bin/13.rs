@@ -4,48 +4,7 @@ use nom::{
     multi::separated_list0, sequence::delimited, IResult,
 };
 
-#[must_use]
-pub fn part_one(input: &str) -> Option<usize> {
-    let sum_of_indices = parse(input)
-        .iter()
-        .tuples()
-        .enumerate()
-        .filter_map(
-            |(idx, (left, right))| {
-                if left < right {
-                    Some(idx + 1)
-                } else {
-                    None
-                }
-            },
-        )
-        .sum();
-
-    Some(sum_of_indices)
-}
-
-#[must_use]
-pub fn part_two(input: &str) -> Option<usize> {
-    let mut packets = parse(input);
-
-    let div1 = Packet::List(vec![Packet::List(vec![Packet::Int(2)])]);
-    let div2 = Packet::List(vec![Packet::List(vec![Packet::Int(6)])]);
-
-    packets.extend_from_slice(&[div1.clone(), div2.clone()]);
-    packets.sort();
-
-    packets
-        .iter()
-        .enumerate()
-        .filter_map(|(idx, p)| {
-            if *p == div1 || *p == div2 {
-                Some(idx + 1)
-            } else {
-                None
-            }
-        })
-        .reduce(|a, b| a * b)
-}
+advent_of_code::solution!(13);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum Packet {
@@ -92,10 +51,45 @@ fn parse(input: &str) -> Vec<Packet> {
         .collect()
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 13);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
+pub fn part_one(input: &str) -> Option<usize> {
+    let sum_of_indices = parse(input)
+        .iter()
+        .tuples()
+        .enumerate()
+        .filter_map(
+            |(idx, (left, right))| {
+                if left < right {
+                    Some(idx + 1)
+                } else {
+                    None
+                }
+            },
+        )
+        .sum();
+
+    Some(sum_of_indices)
+}
+
+pub fn part_two(input: &str) -> Option<usize> {
+    let mut packets = parse(input);
+
+    let div1 = Packet::List(vec![Packet::List(vec![Packet::Int(2)])]);
+    let div2 = Packet::List(vec![Packet::List(vec![Packet::Int(6)])]);
+
+    packets.extend_from_slice(&[div1.clone(), div2.clone()]);
+    packets.sort();
+
+    packets
+        .iter()
+        .enumerate()
+        .filter_map(|(idx, p)| {
+            if *p == div1 || *p == div2 {
+                Some(idx + 1)
+            } else {
+                None
+            }
+        })
+        .reduce(|a, b| a * b)
 }
 
 #[cfg(test)]
@@ -104,13 +98,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 13);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(13));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 13);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(140));
     }
 }

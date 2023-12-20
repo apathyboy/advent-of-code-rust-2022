@@ -1,34 +1,8 @@
 use itertools::Itertools;
 
+advent_of_code::solution!(5);
+
 pub type Move = (u32, usize, usize);
-
-#[must_use]
-pub fn part_one(input: &str) -> Option<String> {
-    let (mut stacks, moves) = parse_input(input);
-
-    for (count, from, to) in &moves {
-        (0..*count).for_each(|_| {
-            let c = stacks[*from].pop().map_or(' ', |s| s);
-            stacks[*to].push(c);
-        });
-    }
-
-    Some(collect_stack_tops(&stacks))
-}
-
-#[must_use]
-pub fn part_two(input: &str) -> Option<String> {
-    let (mut stacks, moves) = parse_input(input);
-
-    for (count, from, to) in &moves {
-        let at = stacks[*from].len() - *count as usize;
-
-        let mut to_move = stacks[*from].split_off(at);
-        stacks[*to].append(&mut to_move);
-    }
-
-    Some(collect_stack_tops(&stacks))
-}
 
 fn collect_stack_tops(stacks: &[Vec<char>]) -> String {
     stacks
@@ -83,6 +57,7 @@ fn parse_stacks(input: &str) -> Vec<Vec<char>> {
 
 fn parse_input(input: &str) -> (Vec<Vec<char>>, Vec<Move>) {
     let split_point = input
+        .replace("\r\n", "\n")
         .find("\n\n")
         .map_or_else(|| panic!("Invalid input"), |t| t);
 
@@ -91,10 +66,30 @@ fn parse_input(input: &str) -> (Vec<Vec<char>>, Vec<Move>) {
     (parse_stacks(stacks), parse_moves(moves))
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 5);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
+pub fn part_one(input: &str) -> Option<String> {
+    let (mut stacks, moves) = parse_input(input);
+
+    for (count, from, to) in &moves {
+        (0..*count).for_each(|_| {
+            let c = stacks[*from].pop().map_or(' ', |s| s);
+            stacks[*to].push(c);
+        });
+    }
+
+    Some(collect_stack_tops(&stacks))
+}
+
+pub fn part_two(input: &str) -> Option<String> {
+    let (mut stacks, moves) = parse_input(input);
+
+    for (count, from, to) in &moves {
+        let at = stacks[*from].len() - *count as usize;
+
+        let mut to_move = stacks[*from].split_off(at);
+        stacks[*to].append(&mut to_move);
+    }
+
+    Some(collect_stack_tops(&stacks))
 }
 
 #[cfg(test)]
@@ -103,13 +98,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 5);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some("CMZ".to_string()));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 5);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some("MCD".to_string()));
     }
 }

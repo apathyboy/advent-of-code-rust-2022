@@ -1,10 +1,35 @@
 use itertools::Itertools;
 use std::convert::TryFrom;
 
-/// # Panics
-///
-/// Will panic on invalid input
-#[must_use]
+advent_of_code::solution!(20);
+
+fn mix(encrypted: Vec<(i64, usize)>) -> Vec<(i64, usize)> {
+    let mut mixed = encrypted;
+
+    for i in 0..mixed.len() {
+        let (cur_offset, cur_val) = match mixed.iter().find_position(|(_, idx)| *idx == i) {
+            Some((idx, val)) => (idx, *val),
+            None => panic!("Invalid item"),
+        };
+
+        let new_offset = (cur_offset as i64 + cur_val.0) % (mixed.len() - 1) as i64;
+        let new_offset_adjusted = if new_offset >= 0 {
+            new_offset
+        } else {
+            mixed.len() as i64 - 1 + new_offset
+        };
+
+        mixed.remove(cur_offset);
+        mixed.insert(
+            usize::try_from(new_offset_adjusted)
+                .map_or_else(|e| panic!("Invalid conversion: {e:?}"), |i| i),
+            cur_val,
+        );
+    }
+
+    mixed
+}
+
 pub fn part_one(input: &str) -> Option<i64> {
     let encrypted = input
         .lines()
@@ -31,10 +56,6 @@ pub fn part_one(input: &str) -> Option<i64> {
     Some(v1 + v2 + v3)
 }
 
-/// # Panics
-///
-/// Will panic on invalid input
-#[must_use]
 pub fn part_two(input: &str) -> Option<i64> {
     let encrypted = input
         .lines()
@@ -66,52 +87,19 @@ pub fn part_two(input: &str) -> Option<i64> {
     Some(v1 + v2 + v3)
 }
 
-fn mix(encrypted: Vec<(i64, usize)>) -> Vec<(i64, usize)> {
-    let mut mixed = encrypted;
-
-    for i in 0..mixed.len() {
-        let (cur_offset, cur_val) = match mixed.iter().find_position(|(_, idx)| *idx == i) {
-            Some((idx, val)) => (idx, *val),
-            None => panic!("Invalid item"),
-        };
-
-        let new_offset = (cur_offset as i64 + cur_val.0) % (mixed.len() - 1) as i64;
-        let new_offset_adjusted = if new_offset >= 0 {
-            new_offset
-        } else {
-            mixed.len() as i64 - 1 + new_offset
-        };
-
-        mixed.remove(cur_offset);
-        mixed.insert(
-            usize::try_from(new_offset_adjusted)
-                .map_or_else(|e| panic!("Invalid conversion: {e:?}"), |i| i),
-            cur_val,
-        );
-    }
-
-    mixed
-}
-
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 20);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 20);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(3));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 20);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(1_623_178_306));
     }
 }

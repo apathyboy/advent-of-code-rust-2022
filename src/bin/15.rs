@@ -1,85 +1,7 @@
 use itertools::Itertools;
 use regex::Regex;
 
-#[must_use]
-pub fn part_one(input: &str) -> Option<i32> {
-    let sensor_beacon_pairs = parse(input);
-    let n = if sensor_beacon_pairs.len() == 14 {
-        10
-    } else {
-        2_000_000
-    };
-
-    let mut x_min = i32::MAX;
-    let mut x_max = i32::MIN;
-
-    let mut ranges: Vec<(i32, i32)> = Vec::new();
-
-    for (sensor, _, dist) in sensor_beacon_pairs {
-        let y_diff = (sensor.1 - n).abs();
-        let x_remainder = (-y_diff).wrapping_add_unsigned(dist);
-
-        if x_remainder >= 0 {
-            let x_left = sensor.0 - x_remainder;
-            let x_right = sensor.0 + x_remainder;
-            x_min = x_min.min(x_left);
-            x_max = x_max.max(x_right);
-
-            ranges.push((x_left, x_right));
-        }
-    }
-
-    ranges.sort_by_key(|r| r.0);
-
-    let tmp = x_max - x_min;
-
-    let gap = has_gap(&ranges);
-
-    if gap.is_some() {
-        Some(tmp - 1)
-    } else {
-        Some(tmp)
-    }
-}
-
-#[must_use]
-pub fn part_two(input: &str) -> Option<i64> {
-    let sensor_beacon_pairs = parse(input);
-    let max_rowscols = if sensor_beacon_pairs.len() == 14 {
-        20
-    } else {
-        4_000_000
-    };
-
-    for n in 0..max_rowscols {
-        let mut x_min = i32::MAX;
-        let mut x_max = i32::MIN;
-
-        let mut ranges: Vec<(i32, i32)> = Vec::new();
-
-        for (sensor, _, dist) in &sensor_beacon_pairs {
-            let y_diff = (sensor.1 - n).abs();
-            let x_remainder = (-y_diff).wrapping_add_unsigned(*dist);
-
-            if x_remainder >= 0 {
-                let x_left = sensor.0 - x_remainder;
-                let x_right = sensor.0 + x_remainder;
-                x_min = x_min.min(x_left);
-                x_max = x_max.max(x_right);
-
-                ranges.push((x_left, x_right));
-            }
-        }
-
-        ranges.sort_by_key(|r| r.0);
-
-        if let Some(gap) = has_gap(&ranges) {
-            return Some((i64::from(gap) * 4_000_000_i64) + i64::from(n));
-        }
-    }
-
-    None
-}
+advent_of_code::solution!(15);
 
 type Point = (i32, i32);
 
@@ -146,10 +68,82 @@ const fn manhattan(p1: Point, p2: Point) -> u32 {
     p1.0.abs_diff(p2.0) + p1.1.abs_diff(p2.1)
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 15);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
+pub fn part_one(input: &str) -> Option<i32> {
+    let sensor_beacon_pairs = parse(input);
+    let n = if sensor_beacon_pairs.len() == 14 {
+        10
+    } else {
+        2_000_000
+    };
+
+    let mut x_min = i32::MAX;
+    let mut x_max = i32::MIN;
+
+    let mut ranges: Vec<(i32, i32)> = Vec::new();
+
+    for (sensor, _, dist) in sensor_beacon_pairs {
+        let y_diff = (sensor.1 - n).abs();
+        let x_remainder = (-y_diff).wrapping_add_unsigned(dist);
+
+        if x_remainder >= 0 {
+            let x_left = sensor.0 - x_remainder;
+            let x_right = sensor.0 + x_remainder;
+            x_min = x_min.min(x_left);
+            x_max = x_max.max(x_right);
+
+            ranges.push((x_left, x_right));
+        }
+    }
+
+    ranges.sort_by_key(|r| r.0);
+
+    let tmp = x_max - x_min;
+
+    let gap = has_gap(&ranges);
+
+    if gap.is_some() {
+        Some(tmp - 1)
+    } else {
+        Some(tmp)
+    }
+}
+
+pub fn part_two(input: &str) -> Option<i64> {
+    let sensor_beacon_pairs = parse(input);
+    let max_rowscols = if sensor_beacon_pairs.len() == 14 {
+        20
+    } else {
+        4_000_000
+    };
+
+    for n in 0..max_rowscols {
+        let mut x_min = i32::MAX;
+        let mut x_max = i32::MIN;
+
+        let mut ranges: Vec<(i32, i32)> = Vec::new();
+
+        for (sensor, _, dist) in &sensor_beacon_pairs {
+            let y_diff = (sensor.1 - n).abs();
+            let x_remainder = (-y_diff).wrapping_add_unsigned(*dist);
+
+            if x_remainder >= 0 {
+                let x_left = sensor.0 - x_remainder;
+                let x_right = sensor.0 + x_remainder;
+                x_min = x_min.min(x_left);
+                x_max = x_max.max(x_right);
+
+                ranges.push((x_left, x_right));
+            }
+        }
+
+        ranges.sort_by_key(|r| r.0);
+
+        if let Some(gap) = has_gap(&ranges) {
+            return Some((i64::from(gap) * 4_000_000_i64) + i64::from(n));
+        }
+    }
+
+    None
 }
 
 #[cfg(test)]
@@ -158,13 +152,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 15);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(26));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 15);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(56_000_011));
     }
 }

@@ -1,36 +1,6 @@
 use std::collections::HashMap;
 
-#[must_use]
-pub fn part_one(input: &str) -> Option<u64> {
-    let total = read_directory_sizes(input)
-        .iter()
-        .filter(|&size| *size < 100_000)
-        .sum();
-
-    Some(total)
-}
-
-/// # Panics
-///
-/// Will panic if `read_directory_sizes` result is empty
-#[must_use]
-pub fn part_two(input: &str) -> Option<u64> {
-    let dir_sizes = read_directory_sizes(input);
-
-    let cur_usage = dir_sizes.iter().max().map_or(0, |m| *m);
-    let required_space = cur_usage - 40_000_000;
-
-    dir_sizes
-        .iter()
-        .filter_map(|size| {
-            if *size >= required_space {
-                Some(*size)
-            } else {
-                None
-            }
-        })
-        .min()
-}
+advent_of_code::solution!(7);
 
 fn read_directory_sizes(input: &str) -> Vec<u64> {
     let mut current_path: Vec<&str> = Vec::new();
@@ -83,10 +53,31 @@ fn read_directory_sizes(input: &str) -> Vec<u64> {
     dir_structure.values().copied().collect::<Vec<u64>>()
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 7);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
+pub fn part_one(input: &str) -> Option<u64> {
+    let total = read_directory_sizes(input)
+        .iter()
+        .filter(|&size| *size < 100_000)
+        .sum();
+
+    Some(total)
+}
+
+pub fn part_two(input: &str) -> Option<u64> {
+    let dir_sizes = read_directory_sizes(input);
+
+    let cur_usage = dir_sizes.iter().max().map_or(0, |m| *m);
+    let required_space = cur_usage - 40_000_000;
+
+    dir_sizes
+        .iter()
+        .filter_map(|size| {
+            if *size >= required_space {
+                Some(*size)
+            } else {
+                None
+            }
+        })
+        .min()
 }
 
 #[cfg(test)]
@@ -95,13 +86,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 7);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(95437));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 7);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(24_933_642));
     }
 }

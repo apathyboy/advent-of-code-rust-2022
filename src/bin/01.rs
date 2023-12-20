@@ -1,13 +1,18 @@
 use itertools::Itertools;
 
-#[must_use]
+advent_of_code::solution!(1);
+
 pub fn part_one(input: &str) -> Option<u32> {
-    input.split("\n\n").map(parse_group).max()
+    input
+        .replace("\r\n", "\n")
+        .split("\n\n")
+        .map(parse_group)
+        .max()
 }
 
-#[must_use]
 pub fn part_two(input: &str) -> Option<u32> {
     let top3 = input
+        .replace("\r\n", "\n")
         .split("\n\n")
         .map(parse_group)
         .sorted_unstable_by(|a, b| b.cmp(a))
@@ -18,16 +23,7 @@ pub fn part_two(input: &str) -> Option<u32> {
 }
 
 fn parse_group(input: &str) -> u32 {
-    input
-        .split('\n')
-        .filter_map(|s| s.parse::<u32>().ok())
-        .sum()
-}
-
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 1);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
+    input.lines().filter_map(|s| s.parse::<u32>().ok()).sum()
 }
 
 #[cfg(test)]
@@ -36,13 +32,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 1);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(24000));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 1);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(45000));
     }
 }

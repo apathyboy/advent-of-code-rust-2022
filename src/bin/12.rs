@@ -1,26 +1,6 @@
 use std::collections::{HashMap, VecDeque};
 
-#[must_use]
-pub fn part_one(input: &str) -> Option<u16> {
-    let (map, start, end) = parse_input(input);
-
-    explore(&map, start, ExploreDirection::StartToEnd)
-        .iter()
-        .find_map(|(p, steps)| if *p == end { Some(*steps) } else { None })
-}
-
-#[must_use]
-pub fn part_two(input: &str) -> Option<u16> {
-    let (map, _, end) = parse_input(input);
-
-    explore(&map, end, ExploreDirection::EndToStart)
-        .iter()
-        .filter_map(|(p, steps)| match map.get(&(p.0, p.1)) {
-            Some('a') => Some(*steps),
-            _ => None,
-        })
-        .min()
-}
+advent_of_code::solution!(12);
 
 type Point = (i16, i16);
 
@@ -108,10 +88,24 @@ fn parse_input(input: &str) -> (HashMap<Point, char>, Point, Point) {
     (map, start, end)
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 12);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
+pub fn part_one(input: &str) -> Option<u16> {
+    let (map, start, end) = parse_input(input);
+
+    explore(&map, start, ExploreDirection::StartToEnd)
+        .iter()
+        .find_map(|(p, steps)| if *p == end { Some(*steps) } else { None })
+}
+
+pub fn part_two(input: &str) -> Option<u16> {
+    let (map, _, end) = parse_input(input);
+
+    explore(&map, end, ExploreDirection::EndToStart)
+        .iter()
+        .filter_map(|(p, steps)| match map.get(&(p.0, p.1)) {
+            Some('a') => Some(*steps),
+            _ => None,
+        })
+        .min()
 }
 
 #[cfg(test)]
@@ -120,13 +114,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 12);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(31));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 12);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(29));
     }
 }

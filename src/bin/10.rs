@@ -1,9 +1,16 @@
 use itertools::Itertools;
 
-/// # Panics
-///
-/// Will panic if line is invalid format
-#[must_use]
+advent_of_code::solution!(10);
+
+const fn crt_value(cycle: i32, x_register: i32) -> char {
+    let draw_pos = (cycle - 1) % 40;
+    if draw_pos >= x_register - 1 && draw_pos <= x_register + 1 {
+        '#'
+    } else {
+        '.'
+    }
+}
+
 pub fn part_one(input: &str) -> Option<i32> {
     let mut cycles = Vec::new();
     let mut x_register = 1;
@@ -26,10 +33,6 @@ pub fn part_one(input: &str) -> Option<i32> {
     Some(cycles.iter().skip(19).step_by(40).take(6).sum())
 }
 
-/// # Panics
-///
-/// Will panic if line is invalid format
-#[must_use]
 pub fn part_two(input: &str) -> Option<String> {
     let mut output = Vec::new();
     let mut x_register = 1;
@@ -58,34 +61,19 @@ pub fn part_two(input: &str) -> Option<String> {
     Some(display)
 }
 
-const fn crt_value(cycle: i32, x_register: i32) -> char {
-    let draw_pos = (cycle - 1) % 40;
-    if draw_pos >= x_register - 1 && draw_pos <= x_register + 1 {
-        '#'
-    } else {
-        '.'
-    }
-}
-
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 10);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 10);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(13140));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 10);
+        let input = advent_of_code::template::read_file("examples", DAY);
         let string = "##..##..##..##..##..##..##..##..##..##..
 ###...###...###...###...###...###...###.
 ####....####....####....####....####....

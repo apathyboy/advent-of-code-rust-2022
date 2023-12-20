@@ -1,26 +1,6 @@
 use itertools::Itertools;
 
-#[must_use]
-pub fn part_one(input: &str) -> Option<usize> {
-    let (map, x_max, y_max) = parse_map(input);
-
-    let visible = (0..y_max)
-        .cartesian_product(0..x_max)
-        .filter(|(x, y)| visibility_check(&map, *x, x_max, *y, y_max))
-        .count();
-
-    Some(visible)
-}
-
-#[must_use]
-pub fn part_two(input: &str) -> Option<usize> {
-    let (map, x_max, y_max) = parse_map(input);
-
-    (1..y_max - 1)
-        .cartesian_product(1..x_max - 1)
-        .map(|(x, y)| scenic_score(&map, x, x_max, y, y_max))
-        .max()
-}
+advent_of_code::solution!(8);
 
 fn visibility_check(map: &[Vec<u32>], x: usize, x_max: usize, y: usize, y_max: usize) -> bool {
     let c = map[y][x];
@@ -59,10 +39,24 @@ fn parse_map(input: &str) -> (Vec<Vec<u32>>, usize, usize) {
     (map, x_max, y_max)
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 8);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
+pub fn part_one(input: &str) -> Option<usize> {
+    let (map, x_max, y_max) = parse_map(input);
+
+    let visible = (0..y_max)
+        .cartesian_product(0..x_max)
+        .filter(|(x, y)| visibility_check(&map, *x, x_max, *y, y_max))
+        .count();
+
+    Some(visible)
+}
+
+pub fn part_two(input: &str) -> Option<usize> {
+    let (map, x_max, y_max) = parse_map(input);
+
+    (1..y_max - 1)
+        .cartesian_product(1..x_max - 1)
+        .map(|(x, y)| scenic_score(&map, x, x_max, y, y_max))
+        .max()
 }
 
 #[cfg(test)]
@@ -71,13 +65,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 8);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(21));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 8);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(8));
     }
 }

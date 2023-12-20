@@ -1,12 +1,4 @@
-#[must_use]
-pub fn part_one(input: &str) -> Option<u32> {
-    Some(input.lines().map(outcomes_part1).sum())
-}
-
-#[must_use]
-pub fn part_two(input: &str) -> Option<u32> {
-    Some(input.lines().map(outcomes_part2).sum())
-}
+advent_of_code::solution!(2);
 
 fn outcomes_part1(game: &str) -> u32 {
     match game {
@@ -38,10 +30,12 @@ fn outcomes_part2(game: &str) -> u32 {
     }
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 2);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
+pub fn part_one(input: &str) -> Option<u32> {
+    Some(input.lines().map(outcomes_part1).sum())
+}
+
+pub fn part_two(input: &str) -> Option<u32> {
+    Some(input.lines().map(outcomes_part2).sum())
 }
 
 #[cfg(test)]
@@ -50,13 +44,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 2);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(15));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 2);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(12));
     }
 }

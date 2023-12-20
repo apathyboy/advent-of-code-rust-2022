@@ -1,20 +1,6 @@
 use std::collections::HashMap;
 
-/// # Panics
-///
-/// Will panic on invalid input
-#[must_use]
-pub fn part_one(input: &str) -> Option<String> {
-    let fuel_requirements = parse_fuel_requirements(input);
-    let snafu_val = to_snafu(fuel_requirements);
-
-    Some(snafu_val)
-}
-
-#[must_use]
-pub const fn part_two(_input: &str) -> Option<u32> {
-    None
-}
+advent_of_code::solution!(25);
 
 fn to_snafu(val: i64) -> String {
     let mut snafu = String::new();
@@ -53,10 +39,15 @@ fn parse_fuel_requirements(input: &str) -> i64 {
     input.lines().map(from_snafu).sum()
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 25);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
+pub fn part_one(input: &str) -> Option<String> {
+    let fuel_requirements = parse_fuel_requirements(input);
+    let snafu_val = to_snafu(fuel_requirements);
+
+    Some(snafu_val)
+}
+
+pub fn part_two(_input: &str) -> Option<u32> {
+    None
 }
 
 #[cfg(test)]
@@ -65,13 +56,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 25);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some("2=-1=0".to_string()));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 25);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), None);
     }
 

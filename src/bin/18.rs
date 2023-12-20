@@ -1,48 +1,7 @@
+use itertools::Itertools;
 use std::collections::VecDeque;
 
-use itertools::Itertools;
-
-#[must_use]
-pub fn part_one(input: &str) -> Option<u16> {
-    let cubes = parse(input);
-    let mut open_faces = 0;
-
-    for i in 0..cubes.len() {
-        open_faces += count_open_faces(cubes[i], &cubes);
-    }
-
-    Some(open_faces)
-}
-
-/// # Panics
-///
-/// Will panic on invalid input
-#[must_use]
-pub fn part_two(input: &str) -> Option<usize> {
-    let cubes = parse(input);
-
-    let (min_corner, max_corner) = get_bounds(&cubes);
-
-    let mut visited: Vec<Cube> = Vec::new();
-    let mut open_faces: Vec<Cube> = Vec::new();
-    let mut q = VecDeque::new();
-
-    q.push_back(min_corner);
-
-    while !q.is_empty() {
-        let c = q.pop_front().map_or_else(|| panic!("Expected item"), |c| c);
-
-        if is_in_bounds(min_corner, max_corner, c) && !cubes.contains(&c) && !visited.contains(&c) {
-            visited.push(c);
-
-            open_faces.extend(touches_droplet(&cubes, c));
-
-            q.extend(adjacent_positions(c));
-        }
-    }
-
-    Some(open_faces.len())
-}
+advent_of_code::solution!(18);
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 struct Cube {
@@ -173,10 +132,41 @@ fn parse(input: &str) -> Vec<Cube> {
     input.lines().map(parse_cube).collect_vec()
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 18);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
+pub fn part_one(input: &str) -> Option<u16> {
+    let cubes = parse(input);
+    let mut open_faces = 0;
+
+    for i in 0..cubes.len() {
+        open_faces += count_open_faces(cubes[i], &cubes);
+    }
+
+    Some(open_faces)
+}
+
+pub fn part_two(input: &str) -> Option<usize> {
+    let cubes = parse(input);
+
+    let (min_corner, max_corner) = get_bounds(&cubes);
+
+    let mut visited: Vec<Cube> = Vec::new();
+    let mut open_faces: Vec<Cube> = Vec::new();
+    let mut q = VecDeque::new();
+
+    q.push_back(min_corner);
+
+    while !q.is_empty() {
+        let c = q.pop_front().map_or_else(|| panic!("Expected item"), |c| c);
+
+        if is_in_bounds(min_corner, max_corner, c) && !cubes.contains(&c) && !visited.contains(&c) {
+            visited.push(c);
+
+            open_faces.extend(touches_droplet(&cubes, c));
+
+            q.extend(adjacent_positions(c));
+        }
+    }
+
+    Some(open_faces.len())
 }
 
 #[cfg(test)]
@@ -185,13 +175,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 18);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(64));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 18);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(58));
     }
 }

@@ -1,49 +1,7 @@
 use itertools::Itertools;
 use std::cmp::{max, min};
 
-#[must_use]
-pub fn part_one(input: &str) -> Option<u32> {
-    let mut map = parse(input);
-    let max_y = find_max_y(&map);
-    let mut sand_counter = 0;
-
-    loop {
-        let mut sand = (500, 0);
-
-        while let Some(next_move) = find_next_move(&map, sand, max_y + 2) {
-            if next_move.1 == max_y {
-                return Some(sand_counter);
-            }
-
-            sand = next_move;
-        }
-
-        map.push(sand);
-        sand_counter += 1;
-    }
-}
-
-#[must_use]
-pub fn part_two(input: &str) -> Option<u32> {
-    let mut map = parse(input);
-    let floor_y = find_max_y(&map) + 2;
-    let mut sand_counter = 0;
-
-    loop {
-        let mut sand = (500, 0);
-
-        while let Some(next_move) = find_next_move(&map, sand, floor_y) {
-            sand = next_move;
-        }
-
-        if sand.0 == 500 && sand.1 == 0 {
-            return Some(sand_counter + 1);
-        }
-
-        map.push(sand);
-        sand_counter += 1;
-    }
-}
+advent_of_code::solution!(14);
 
 type Point = (i16, i16);
 
@@ -119,10 +77,46 @@ fn parse(input: &str) -> Vec<Point> {
     map
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 14);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
+pub fn part_one(input: &str) -> Option<u32> {
+    let mut map = parse(input);
+    let max_y = find_max_y(&map);
+    let mut sand_counter = 0;
+
+    loop {
+        let mut sand = (500, 0);
+
+        while let Some(next_move) = find_next_move(&map, sand, max_y + 2) {
+            if next_move.1 == max_y {
+                return Some(sand_counter);
+            }
+
+            sand = next_move;
+        }
+
+        map.push(sand);
+        sand_counter += 1;
+    }
+}
+
+pub fn part_two(input: &str) -> Option<u32> {
+    let mut map = parse(input);
+    let floor_y = find_max_y(&map) + 2;
+    let mut sand_counter = 0;
+
+    loop {
+        let mut sand = (500, 0);
+
+        while let Some(next_move) = find_next_move(&map, sand, floor_y) {
+            sand = next_move;
+        }
+
+        if sand.0 == 500 && sand.1 == 0 {
+            return Some(sand_counter + 1);
+        }
+
+        map.push(sand);
+        sand_counter += 1;
+    }
 }
 
 #[cfg(test)]
@@ -131,13 +125,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 14);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(24));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 14);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(93));
     }
 }
