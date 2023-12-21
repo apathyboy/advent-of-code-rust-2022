@@ -3,57 +3,65 @@ use std::collections::HashMap;
 advent_of_code::solution!(16);
 
 #[derive(Debug)]
-struct Valve<'a> {
-    id: &'a str,
+struct Valve {
+    id: String,
     flow_rate: u32,
-    neighbors: Vec<&'a str>,
+    neighbors: Vec<String>,
 }
 
-impl<'a> Valve<'a> {
-    fn new(id: &'a str, flow_rate: u32, neighbors: Vec<&'a str>) -> Self {
+impl Valve {
+    fn new(id: &str, flow_rate: u32, neighbors: &[&str]) -> Self {
         Self {
-            id,
+            id: id.to_string(),
             flow_rate,
-            neighbors,
+            neighbors: neighbors.iter().map(|n| n.to_string()).collect(),
         }
     }
 }
 
 fn parse_valve(input: &str) -> Valve {
     let (valve, neighbors) = input.split_once("; ").unwrap();
+    let neighbors = neighbors[22..].trim().split(", ").collect::<Vec<_>>();
 
-    Valve::new(
-        &valve[6..8],
-        valve[23..].parse().unwrap(),
-        neighbors[22..].trim().split(", ").collect::<Vec<_>>(),
-    )
+    Valve::new(&valve[6..8], valve[23..].parse().unwrap(), &neighbors)
+}
+
+fn find_next_valve(
+    valves: &HashMap<String, Valve>,
+    opened_valves: &[String],
+    current_valve: &str,
+    remaining_time: u32,
+) -> Option<(Valve, u32, u32)> {
+    None
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let valves = input.lines().map(parse_valve).collect::<Vec<_>>();
+    let valves = input
+        .lines()
+        .map(|line| {
+            let valve = parse_valve(line);
 
-    let mut pressure_released = 0;
+            (valve.id.clone(), valve)
+        })
+        .collect::<HashMap<_, _>>();
+
+    let mut current_valve = "AA".to_string();
+    let mut opened_valves: Vec<String> = vec![];
     let mut remaining_time = 30;
+    let mut released_pressure = 0;
 
-    let mut current_valve = &valves[0];
-    let mut opened_valves: Vec<&str> = Vec::new();
-
-    // take the current valve and find the max potential release for all other valves not currently open and pick the largest
-    // when determining the potential, consider it takes 1 sec to move between valves and 1 second to open. Find the potential
-    // for the remaining time factoring in movement and opening times.
-
-    let mut potential: HashMap<&str, u32> = HashMap::new();
-
-    let mut to_check = current_valve.neighbors.clone();
-
-    let mut distance = 1;
-    while !to_check.is_empty() {
-        let next_valve = to_check.pop().unwrap();
-
-        println!("next_valve: {}", next_valve);
+    while let Some((valve, time_consumed, pressure)) = find_next_valve(
+        &valves,
+        &opened_valves,
+        current_valve.as_str(),
+        remaining_time,
+    ) {
+        current_valve = valve.id.clone();
+        remaining_time = time_consumed;
+        released_pressure += pressure;
     }
 
-    Some(pressure_released)
+    Some(released_pressure)
 }
 
 pub fn part_two(_input: &str) -> Option<u32> {
