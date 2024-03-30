@@ -13,7 +13,7 @@ fn model(input: &str, knot_count: usize) -> usize {
         .count()
 }
 
-fn move_instruction(knots: &mut Vec<(i32, i32)>, motion: (i32, i32), amt: i32) -> Vec<(i32, i32)> {
+fn move_instruction(knots: &mut [(i32, i32)], motion: (i32, i32), amt: i32) -> Vec<(i32, i32)> {
     (0..amt)
         .map(|_| -> (i32, i32) {
             move_toward(&mut knots[0], motion);
