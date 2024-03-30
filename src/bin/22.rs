@@ -235,7 +235,7 @@ fn wrap_input(pos: (u32, u32), facing: Direction) -> ((u32, u32), Direction) {
                 row, col, facing
             );
         }
-    } else if (51..=100).contains(&row) && (51..=100).contains(&col) {
+    } else if (101..=150).contains(&row) && (51..=100).contains(&col) {
         // face 4
         if facing == Direction::Right {
             ((151 - row, 150), Direction::Left)
